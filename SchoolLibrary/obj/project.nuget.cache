@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "dbYVG8oFvT4=",
+  "success": true,
+  "projectFilePath": "/home/weilon/Desktop/UselessProjects/SchoolLibrary/SchoolLibrary/SchoolLibrary.csproj",
+  "expectedPackageFiles": [
+    "/home/weilon/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.30/microsoft.aspnetcore.app.ref.8.0.30.nupkg.sha512",
+    "/home/weilon/.nuget/packages/microsoft.netcore.app.host.linux-x64/8.0.30/microsoft.netcore.app.host.linux-x64.8.0.30.nupkg.sha512"
+  ],
+  "logs": []
+}
