@@ -1,0 +1,113 @@
+@model List<SchoolLibrary.Models.Book>
+@{
+    ViewData["Title"] = "Каталог книг";
+    var role = ViewBag.Role as string;
+    var isLibrarian = role == "Librarian";
+    var genres = ViewBag.Genres as List<string> ?? new();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/books.css" asp-append-version="true" />
+}
+
+<div class="books-page">
+
+    <div class="books-toolbar">
+        <form method="get" asp-action="Index" class="toolbar-form">
+            <input type="text" name="search" class="search-input"
+                   placeholder="🔍 Поиск по названию или автору..."
+                   value="@ViewBag.Search" />
+
+            <select name="sort" class="filter-select">
+                <option value="">Сортировка</option>
+                <option value="title"     selected="@(ViewBag.Sort == "title")">По названию</option>
+                <option value="author"    selected="@(ViewBag.Sort == "author")">По автору</option>
+                <option value="year_asc"  selected="@(ViewBag.Sort == "year_asc")">Год ↑</option>
+                <option value="year_desc" selected="@(ViewBag.Sort == "year_desc")">Год ↓</option>
+            </select>
+
+            <select name="genre" class="filter-select">
+                <option value="">Все жанры</option>
+                @foreach (var g in genres)
+                {
+                    <option value="@g" selected="@(ViewBag.Genre == g)">@g</option>
+                }
+            </select>
+
+            <label class="checkbox-label">
+                <input type="checkbox" name="onlyAvailable" value="true"
+                       @(ViewBag.OnlyAvailable == true ? "checked" : "") />
+                Только доступные
+            </label>
+
+            <button type="submit" class="btn-apply">Применить</button>
+            <a asp-action="Index" class="btn-reset">Сбросить</a>
+        </form>
+
+        @if (isLibrarian)
+        {
+            <a asp-action="Create" class="btn-add">+ Добавить книгу</a>
+        }
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p>По вашему запросу книг не найдено</p>
+        </div>
+    }
+    else
+    {
+        <div class="books-grid">
+            @foreach (var book in Model)
+            {
+                <div class="book-card">
+                    <div class="book-cover">
+                        @if (!string.IsNullOrEmpty(book.CoverUrl))
+                        {
+                            <img src="@book.CoverUrl" alt="@book.Title" />
+                        }
+                        else
+                        {
+                            <span class="cover-placeholder">📖</span>
+                        }
+
+                        @if (book.AvailableCopies > 0)
+                        {
+                            <span class="badge available">В наличии: @book.AvailableCopies</span>
+                        }
+                        else
+                        {
+                            <span class="badge unavailable">Нет в наличии</span>
+                        }
+                    </div>
+
+                    <div class="book-body">
+                        <h3 class="book-title">@book.Title</h3>
+                        <p class="book-author">@book.AuthorName</p>
+                        <p class="book-meta">
+                            <span>@book.Genre</span> · <span>@book.Year</span>
+                        </p>
+                    </div>
+
+                    <div class="book-actions">
+                        <a asp-action="Details" asp-route-id="@book.Id" class="btn-details">Подробнее</a>
+
+                        @if (isLibrarian)
+                        {
+                            <a asp-action="Edit" asp-route-id="@book.Id" class="btn-icon" title="Редактировать">✏️</a>
+                            <a asp-action="Delete" asp-route-id="@book.Id" class="btn-icon" title="Удалить">🗑️</a>
+                        }
+                        else if (book.AvailableCopies > 0)
+                        {
+                            <form asp-action="Borrow" asp-route-id="@book.Id" method="post" class="inline-form">
+                                <button type="submit" class="btn-borrow">Взять книгу</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

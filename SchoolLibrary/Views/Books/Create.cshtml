@@ -1,0 +1,52 @@
+@model SchoolLibrary.Models.Book
+@{
+    ViewData["Title"] = "Добавить книгу";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
+}
+
+<div class="form-page">
+    <h1>Добавить книгу</h1>
+
+    <form asp-action="Create" method="post" class="app-form">
+        <div class="form-group">
+            <label>Название</label>
+            <input asp-for="Title" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label>Автор</label>
+            <input asp-for="AuthorName" class="form-control" required />
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Жанр</label>
+                <input asp-for="Genre" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Год</label>
+                <input asp-for="Year" type="number" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>ISBN</label>
+            <input asp-for="Isbn" class="form-control" />
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Всего экземпляров</label>
+                <input asp-for="TotalCopies" type="number" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Доступно</label>
+                <input asp-for="AvailableCopies" type="number" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Сохранить</button>
+            <a asp-action="Index" class="btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>

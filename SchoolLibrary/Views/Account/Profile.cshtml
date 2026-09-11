@@ -1,0 +1,73 @@
+@model List<SchoolLibrary.Models.Borrowing>
+@{
+    ViewData["Title"] = "Профиль";
+    var role = ViewBag.UserRole as string;
+    var name = ViewBag.UserName as string;
+    var isLibrarian = role == "Librarian";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+}
+
+<div class="profile-page">
+
+    <aside class="profile-sidebar">
+        <div class="profile-avatar">@name?.Substring(0,1).ToUpper()</div>
+        <h2 class="profile-name">@name</h2>
+        <p class="profile-role">@(isLibrarian ? "Библиотекарь" : "Ученик")</p>
+
+        <a asp-controller="Account" asp-action="Logout" class="btn-logout">Выйти</a>
+    </aside>
+
+    <section class="profile-content">
+        @if (isLibrarian)
+        {
+            <h3>Панель библиотекаря</h3>
+            <div class="librarian-grid">
+                <a asp-controller="Books"      asp-action="Index" class="librarian-card">📚<span>Книги</span></a>
+                <a asp-controller="Authors"    asp-action="Index" class="librarian-card">✍️<span>Авторы</span></a>
+                <a asp-controller="Students"   asp-action="Index" class="librarian-card">🎓<span>Ученики</span></a>
+                <a asp-controller="Borrowings" asp-action="Index" class="librarian-card">📋<span>Выдачи</span></a>
+            </div>
+        }
+        else
+        {
+            <h3>Мои книги</h3>
+
+            @if (Model.Count == 0)
+            {
+                <div class="empty-state"><p>У вас пока нет взятых книг.</p></div>
+            }
+            else
+            {
+                <div class="borrow-list">
+                    @foreach (var b in Model)
+                    {
+                        <div class="borrow-card @(b.IsOverdue ? "overdue" : "")">
+                            <div class="borrow-info">
+                                <h4>@b.BookTitle</h4>
+                                <p class="borrow-author">@b.AuthorName</p>
+                            </div>
+                            <div class="borrow-dates">
+                                <div>
+                                    <span class="label">Взята</span>
+                                    <span class="value">@b.BorrowDate.ToString("dd.MM.yyyy")</span>
+                                </div>
+                                <div>
+                                    <span class="label">Вернуть до</span>
+                                    <span class="value @(b.IsOverdue ? "danger" : "")">
+                                        @b.DueDate.ToString("dd.MM.yyyy")
+                                    </span>
+                                </div>
+                            </div>
+                            <form asp-controller="Books" asp-action="Return" asp-route-id="@b.Id" method="post">
+                                <button type="submit" class="btn-return">Вернуть</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </section>
+</div>

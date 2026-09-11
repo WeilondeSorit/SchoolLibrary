@@ -1,8 +1,45 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Вход";
+    Layout = "_LayoutLogin";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+}
+
+<div class="login-page">
+    <div class="login-bg"></div>
+    <div class="login-overlay"></div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" />
+                <h1>Школьная библиотека</h1>
+                <p>Войдите, чтобы продолжить</p>
+            </div>
+
+            <form asp-controller="Home" asp-action="Login" method="post" class="login-form">
+                <div class="form-group">
+                    <label for="login">Логин</label>
+                    <input id="login" name="login" type="text" class="form-control" placeholder="Введите логин" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input id="password" name="password" type="password" class="form-control" placeholder="Введите пароль" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="role">Роль</label>
+                    <select id="role" name="role" class="form-control">
+                        <option value="Student">Ученик</option>
+                        <option value="Librarian">Библиотекарь</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-login">Войти</button>
+            </form>
+        </div>
+    </div>
 </div>

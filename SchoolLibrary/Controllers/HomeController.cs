@@ -6,26 +6,16 @@ namespace SchoolLibrary.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    // GET: /  — страница авторизации
+    public IActionResult Index() => View();
 
-    public HomeController(ILogger<HomeController> logger)
+    // POST: /Home/Login
+    [HttpPost]
+    public IActionResult Login(string login, string password, string role)
     {
-        _logger = logger;
-    }
-
-    public IActionResult Index()
-    {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        // TODO: заменить на реальную проверку через Identity / БД
+        HttpContext.Session.SetString("UserName", string.IsNullOrWhiteSpace(login) ? "Гость" : login);
+        HttpContext.Session.SetString("UserRole", role ?? "Student");
+        return RedirectToAction("Index", "Books");
     }
 }
