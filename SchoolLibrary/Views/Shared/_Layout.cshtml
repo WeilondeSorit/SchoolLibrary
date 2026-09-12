@@ -9,40 +9,127 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] — Школьная библиотека</title>
+    <title>@ViewData["Title"] - Школьная библиотека</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
-    @await RenderSectionAsync("Styles", required: false)
+    @await RenderSectionAsync(name: "Styles", required: false)
 </head>
 <body>
     @if (!string.IsNullOrEmpty(userName))
     {
-        <header class="app-header">
-            <a asp-controller="Books" asp-action="Index" class="app-logo">📚 Школьная библиотека</a>
+       <header class="app-header">
+    <a asp-controller="Books" asp-action="Index" class="app-logo">
+        Школьная библиотека
+    </a>
 
-            <div class="app-user">
-                @if (userRole == "Librarian")
-                {
-                    <a asp-controller="Authors" asp-action="Index" class="nav-link-app">Авторы</a>
-                    <a asp-controller="Students" asp-action="Index" class="nav-link-app">Ученики</a>
-                    <a asp-controller="Borrowings" asp-action="Index" class="nav-link-app">Выдачи</a>
-                }
+    <!-- Desktop navigation -->
+    <div class="app-user desktop-nav">
+        @if (userRole == "Librarian")
+        {
+            <a asp-controller="Authors" asp-action="Index" class="nav-link-app">
+                Авторы
+            </a>
+            <a asp-controller="Students" asp-action="Index" class="nav-link-app">
+                Ученики
+            </a>
+            <a asp-controller="Borrowings" asp-action="Index" class="nav-link-app">
+                Выдачи
+            </a>
+        }
 
-                <a asp-controller="Account" asp-action="Profile" class="profile-btn">
-                    <span class="avatar">@userName.Substring(0,1).ToUpper()</span>
-                    <span class="profile-info">
-                        <span class="profile-name">@userName</span>
-                        <span class="profile-role">@roleRu</span>
-                    </span>
-                </a>
-            </div>
-        </header>
+        <a asp-controller="Account" asp-action="Profile" class="profile-btn">
+            <span class="avatar">@userName.Substring(0,1).ToUpper()</span>
+
+            <span class="profile-info">
+                <span class="profile-name">@userName</span>
+                <span class="profile-role">@roleRu</span>
+            </span>
+        </a>
+    </div>
+
+    <!-- Mobile menu button -->
+    <button class="mobile-menu-btn"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mobileMenu"
+            aria-controls="mobileMenu"
+            aria-expanded="false"
+            aria-label="Открыть меню">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+</header>
+
+<!-- Mobile navigation -->
+<div class="collapse mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-content">
+
+        <a asp-controller="Books" asp-action="Index" class="mobile-menu-item">
+            📚 Книги
+        </a>
+
+        @if (userRole == "Librarian")
+        {
+            <a asp-controller="Authors" asp-action="Index" class="mobile-menu-item">
+                ✍️ Авторы
+            </a>
+
+            <a asp-controller="Students" asp-action="Index" class="mobile-menu-item">
+                👨‍🎓 Ученики
+            </a>
+
+            <a asp-controller="Borrowings" asp-action="Index" class="mobile-menu-item">
+                📋 Выдачи
+            </a>
+        }
+
+        <a asp-controller="Account" asp-action="Profile" class="mobile-menu-item profile-mobile">
+            <span class="avatar">@userName.Substring(0,1).ToUpper()</span>
+
+            <span class="profile-info">
+                <span class="profile-name">@userName</span>
+                <span class="profile-role">@roleRu</span>
+            </span>
+        </a>
+
+    </div>
+</div>
     }
 
     <main class="app-main">
         @RenderBody()
     </main>
+    <footer class="app-footer">
+    <div class="footer-content">
+        <div class="footer-brand">
+            <span class="footer-logo">                
+                <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" /></span>
+            <div>
+                <div class="footer-title">Школьная библиотека</div>
+                <div class="footer-subtitle">Электронная система библиотеки</div>
+            </div>
+        </div>
+
+        <div class="footer-links">
+            <a asp-controller="Books" asp-action="Index">Книги</a>
+
+            @if (userRole == "Librarian")
+            {
+                <a asp-controller="Authors" asp-action="Index">Авторы</a>
+                <a asp-controller="Students" asp-action="Index">Ученики</a>
+                <a asp-controller="Borrowings" asp-action="Index">Выдачи</a>
+            }
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <span>© @DateTime.Now.Year Школьная библиотека</span>
+        <span>Учебный проект</span>
+    </div>
+</footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

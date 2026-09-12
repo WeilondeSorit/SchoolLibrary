@@ -8,6 +8,7 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 }
 
 <div class="profile-page">
@@ -25,10 +26,15 @@
         {
             <h3>Панель библиотекаря</h3>
             <div class="librarian-grid">
-                <a asp-controller="Books"      asp-action="Index" class="librarian-card">📚<span>Книги</span></a>
-                <a asp-controller="Authors"    asp-action="Index" class="librarian-card">✍️<span>Авторы</span></a>
-                <a asp-controller="Students"   asp-action="Index" class="librarian-card">🎓<span>Ученики</span></a>
-                <a asp-controller="Borrowings" asp-action="Index" class="librarian-card">📋<span>Выдачи</span></a>
+                <!-- Change this images later -->
+                <a asp-controller="Books"      asp-action="Index" class="librarian-card">
+                                    <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" /><span>Книги</span></a>
+                <a asp-controller="Authors"    asp-action="Index" class="librarian-card">
+                                    <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" /><span>Авторы</span></a>
+                <a asp-controller="Students"   asp-action="Index" class="librarian-card">
+                                    <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" /><span>Ученики</span></a>
+                <a asp-controller="Borrowings" asp-action="Index" class="librarian-card">
+                                    <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" /><span>Выдачи</span></a>
             </div>
         }
         else

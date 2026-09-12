@@ -58,3 +58,169 @@
 .profile-info { display: flex; flex-direction: column; line-height: 1.1; }
 .profile-name { font-size: 14px; font-weight: 600; }
 .profile-role { font-size: 11px; color: #6366f1; }
+
+.app-footer {
+    margin-top: auto;
+    padding: 32px 48px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    color: #6c757d;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-logo {
+    font-size: 28px;
+}
+
+.footer-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #343a40;
+}
+
+.footer-subtitle {
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.footer-links a {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.footer-links a:hover {
+    color: #212529;
+}
+
+.footer-bottom {
+    max-width: 1400px;
+    margin: 24px auto 0;
+    padding-top: 16px;
+    border-top: 1px solid #dee2e6;
+
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 12px;
+}
+
+.mobile-menu-btn {
+    display: none;
+
+    width: 42px;
+    height: 42px;
+
+    padding: 8px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.mobile-menu-btn span {
+    display: block;
+
+    width: 20px;
+    height: 2px;
+
+    background: #374151;
+    border-radius: 2px;
+}
+
+.mobile-menu {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+}
+
+.mobile-menu-content {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+
+    padding: 12px 20px 16px;
+
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+
+    box-shadow: 0 3px 8px rgba(0, 0, 0, .06);
+
+    z-index: 99;
+}
+.mobile-menu-item {
+    display: flex;
+    align-items: center;
+        position: sticky;
+
+    width: 100%;
+    padding: 12px 10px;
+
+    color: #374151;
+    text-decoration: none;
+
+    font-weight: 500;
+
+    border-radius: 8px;
+}
+
+.mobile-menu-item:hover {
+    background: #eef2ff;
+    color: #1e40af;
+}
+
+.profile-mobile {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: #eef2ff;
+}
+
+@media (max-width: 768px) {
+
+    .app-header {
+        padding: 0 16px;
+    }
+
+    .desktop-nav {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: flex;
+    }
+
+    .mobile-menu {
+        display: block;
+    }
+}
