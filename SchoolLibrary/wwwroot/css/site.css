@@ -6,13 +6,13 @@ html, body {
     min-height: 100%;
     margin: 0;
     font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-    background: #f4f6fb;
-    color: #1f2937;
+    background: #f8f1e9;
+    color: #3f2a1a;
 }
 
 .app-main { padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
 .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #dca478;
 }

@@ -2,36 +2,36 @@
     height: 64px;
     padding: 0 32px;
     background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e8d9c8;
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    box-shadow: 0 1px 3px rgba(90, 60, 30, .06);
 }
 
 .app-logo {
     font-size: 18px;
     font-weight: 700;
-    color: #1e40af;
+    color: #8a5a2b;
     text-decoration: none;
 }
 
-.app-logo:hover { color: #2563eb; }
+.app-logo:hover { color: #a9713e; }
 
 .app-user { display: flex; align-items: center; gap: 20px; }
 
 .nav-link-app {
-    color: #374151;
+    color: #5c3d24;
     text-decoration: none;
     font-weight: 500;
     padding: 6px 10px;
     border-radius: 6px;
     transition: background .15s;
 }
-.nav-link-app:hover { background: #eef2ff; color: #1e40af; }
+.nav-link-app:hover { background: #f7ede2; color: #8a5a2b; }
 
 .profile-btn {
     display: flex;
@@ -39,17 +39,17 @@
     gap: 10px;
     padding: 6px 14px 6px 6px;
     border-radius: 999px;
-    background: #eef2ff;
-    color: #1e40af;
+    background: #f7ede2;
+    color: #8a5a2b;
     text-decoration: none;
     transition: background .15s, transform .15s;
 }
-.profile-btn:hover { background: #e0e7ff; transform: translateY(-1px); }
+.profile-btn:hover { background: #f0dfcc; transform: translateY(-1px); }
 
 .avatar {
     width: 36px; height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #4f46e5, #2563eb);
+    background: linear-gradient(135deg, #dca478, #b5794a);
     color: #fff;
     display: flex; align-items: center; justify-content: center;
     font-weight: 700;
@@ -57,14 +57,14 @@
 
 .profile-info { display: flex; flex-direction: column; line-height: 1.1; }
 .profile-name { font-size: 14px; font-weight: 600; }
-.profile-role { font-size: 11px; color: #6366f1; }
+.profile-role { font-size: 11px; color: #b5794a; }
 
 .app-footer {
     margin-top: auto;
     padding: 32px 48px 20px;
-    background: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-    color: #6c757d;
+    background: #faf3eb;
+    border-top: 1px solid #e8d9c8;
+    color: #8a6f56;
 }
 
 .footer-content {
@@ -89,7 +89,7 @@
 .footer-title {
     font-size: 16px;
     font-weight: 600;
-    color: #343a40;
+    color: #4a3524;
 }
 
 .footer-subtitle {
@@ -104,20 +104,20 @@
 }
 
 .footer-links a {
-    color: #6c757d;
+    color: #8a6f56;
     text-decoration: none;
     font-size: 14px;
 }
 
 .footer-links a:hover {
-    color: #212529;
+    color: #3f2a1a;
 }
 
 .footer-bottom {
     max-width: 1400px;
     margin: 24px auto 0;
     padding-top: 16px;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid #e8d9c8;
 
     display: flex;
     justify-content: space-between;
@@ -133,7 +133,7 @@
 
     padding: 8px;
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e8d9c8;
     border-radius: 8px;
 
     background: #ffffff;
@@ -152,7 +152,7 @@
     width: 20px;
     height: 2px;
 
-    background: #374151;
+    background: #5c3d24;
     border-radius: 2px;
 }
 
@@ -173,9 +173,9 @@
     padding: 12px 20px 16px;
 
     background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e8d9c8;
 
-    box-shadow: 0 3px 8px rgba(0, 0, 0, .06);
+    box-shadow: 0 3px 8px rgba(90, 60, 30, .08);
 
     z-index: 99;
 }
@@ -187,7 +187,7 @@
     width: 100%;
     padding: 12px 10px;
 
-    color: #374151;
+    color: #5c3d24;
     text-decoration: none;
 
     font-weight: 500;
@@ -196,14 +196,14 @@
 }
 
 .mobile-menu-item:hover {
-    background: #eef2ff;
-    color: #1e40af;
+    background: #f7ede2;
+    color: #8a5a2b;
 }
 
 .profile-mobile {
     margin-top: 8px;
     padding: 8px 10px;
-    background: #eef2ff;
+    background: #f7ede2;
 }
 
 @media (max-width: 768px) {

@@ -4,17 +4,17 @@
     background: #fff;
     padding: 32px;
     border-radius: 14px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    box-shadow: 0 1px 4px rgba(90, 60, 30, .08);
 }
-.form-page h1 { margin: 0 0 24px; font-size: 22px; }
+.form-page h1 { margin: 0 0 24px; font-size: 22px; color: #3f2a1a; }
 
 .app-form .form-group { margin-bottom: 16px; }
-.app-form label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+.app-form label { display: block; font-size: 13px; font-weight: 600; color: #5c3d24; margin-bottom: 6px; }
 
 .app-form .form-control {
     width: 100%;
     padding: 10px 14px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #ddc7b0;
     border-radius: 10px;
     font-size: 14px;
     outline: none;
@@ -22,8 +22,8 @@
     transition: border-color .15s, box-shadow .15s;
 }
 .app-form .form-control:focus {
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79,70,229,.15);
+    border-color: #dca478;
+    box-shadow: 0 0 0 3px rgba(220, 164, 120, .28);
 }
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -40,7 +40,7 @@
     cursor: pointer;
     transition: transform .15s, background .15s;
 }
-.btn-primary   { background: #4f46e5; color: #fff; }
-.btn-primary:hover { background: #4338ca; }
-.btn-secondary { background: #e5e7eb; color: #374151; }
-.btn-secondary:hover { background: #d1d5db; }
+.btn-primary   { background: #dca478; color: #3f2a1a; }
+.btn-primary:hover { background: #c8935f; }
+.btn-secondary { background: #f0e4d8; color: #5c3d24; }
+.btn-secondary:hover { background: #e5d3c0; }
