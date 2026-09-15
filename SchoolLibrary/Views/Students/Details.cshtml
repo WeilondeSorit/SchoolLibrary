@@ -1,0 +1,61 @@
+@model SchoolLibrary.Models.Student
+@{
+    ViewData["Title"] = Model.FullName;
+    var studentBorrowings = MockData.Borrowings.Where(b => b.StudentId == Model.Id).ToList();
+}
+
+<div class="books-page">
+    <div class="books-toolbar">
+        <div class="toolbar-form">
+            <a asp-action="Index" class="btn-reset">← К ученикам</a>
+        </div>
+    </div>
+
+    <div class="profile-page">
+        <aside class="profile-sidebar">
+            <div class="profile-avatar">@Model.FullName.Substring(0, 1).ToUpper()</div>
+            <h2 class="profile-name">@Model.FullName</h2>
+            <p class="profile-role">Класс: @Model.ClassName</p>
+            <p class="profile-role">@Model.Email</p>
+        </aside>
+
+        <section class="profile-content">
+            <h3>Взятые книги</h3>
+
+            @if (studentBorrowings.Count == 0)
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>У ученика нет взятых книг</p>
+                </div>
+            }
+            else
+            {
+                <div class="borrow-list">
+                    @foreach (var b in studentBorrowings)
+                    {
+                        <div class="borrow-card @(b.IsOverdue ? "overdue" : "")">
+                            <div class="borrow-info">
+                                <h4>@b.BookTitle</h4>
+                                <p class="borrow-author">@b.AuthorName</p>
+                            </div>
+                            <div class="borrow-dates">
+                                <div>
+                                    <span class="label">Взята</span>
+                                    <span class="value">@b.BorrowDate.ToString("dd.MM.yyyy")</span>
+                                </div>
+                                <div>
+                                    <span class="label">Вернуть до</span>
+                                    <span class="value @(b.IsOverdue ? "danger" : "")">
+                                        @b.DueDate.ToString("dd.MM.yyyy")
+                                    </span>
+                                </div>
+                            </div>
+                            <a asp-controller="Borrowings" asp-action="Details" asp-route-id="@b.Id" class="btn-details">Открыть</a>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+</div>

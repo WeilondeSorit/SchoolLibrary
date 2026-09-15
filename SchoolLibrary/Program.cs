@@ -20,6 +20,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Показывать красивую 404-страницу при любом необработанном 404
+app.UseStatusCodePagesWithReExecute("/Home/NotFound");
+
 app.UseSession();
 app.UseAuthorization();
 

@@ -1,0 +1,50 @@
+@model SchoolLibrary.Models.Author
+@{
+    ViewData["Title"] = Model.FullName;
+    var authorBooks = MockData.Books.Where(b => b.AuthorId == Model.Id).ToList();
+}
+
+<div class="books-page">
+    <div class="books-toolbar">
+        <div class="toolbar-form">
+            <a asp-action="Index" class="btn-reset">← К авторам</a>
+        </div>
+    </div>
+
+    <div class="profile-page">
+        <aside class="profile-sidebar">
+            <div class="profile-avatar">@Model.FullName.Substring(0, 1).ToUpper()</div>
+            <h2 class="profile-name">@Model.FullName</h2>
+            <p class="profile-role">@Model.Country</p>
+        </aside>
+
+        <section class="profile-content">
+            <h3>Об авторе</h3>
+            <p class="book-meta">@Model.Bio</p>
+
+            <h3 style="margin-top: 28px;">Книги в библиотеке</h3>
+            @if (authorBooks.Count == 0)
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>Книг этого автора пока нет</p>
+                </div>
+            }
+            else
+            {
+                <div class="borrow-list">
+                    @foreach (var book in authorBooks)
+                    {
+                        <div class="borrow-card">
+                            <div class="borrow-info">
+                                <h4>@book.Title</h4>
+                                <p class="borrow-author">@book.Genre · @book.Year</p>
+                            </div>
+                            <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="btn-details">Открыть</a>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+</div>

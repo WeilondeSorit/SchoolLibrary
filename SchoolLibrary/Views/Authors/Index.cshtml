@@ -1,0 +1,44 @@
+@model List<SchoolLibrary.Models.Author>
+@{
+    ViewData["Title"] = "Авторы";
+}
+
+<div class="books-page">
+    <div class="books-toolbar">
+        <div class="toolbar-form">
+            <span class="book-title">Всего авторов: @Model.Count</span>
+        </div>
+        <a asp-controller="Books" asp-action="Index" class="btn-reset">← К книгам</a>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-icon">👤</div>
+            <p>Список авторов пуст</p>
+        </div>
+    }
+    else
+    {
+        <div class="books-grid">
+            @foreach (var author in Model)
+            {
+                <div class="book-card">
+                    <div class="book-cover">
+                        <div class="profile-avatar">@author.FullName.Substring(0, 1).ToUpper()</div>
+                    </div>
+
+                    <div class="book-body">
+                        <h3 class="book-title">@author.FullName</h3>
+                        <p class="book-author">@author.Country</p>
+                        <p class="book-meta">@author.Bio</p>
+                    </div>
+
+                    <div class="book-actions">
+                        <a asp-action="Details" asp-route-id="@author.Id" class="btn-details">Подробнее</a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

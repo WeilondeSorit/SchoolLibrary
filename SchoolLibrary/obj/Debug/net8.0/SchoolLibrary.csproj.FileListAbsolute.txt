@@ -31,3 +31,4 @@
 /home/weilon/Desktop/UselessProjects/SchoolLibrary/SchoolLibrary/obj/Debug/net8.0/SchoolLibrary.pdb
 /home/weilon/Desktop/UselessProjects/SchoolLibrary/SchoolLibrary/obj/Debug/net8.0/SchoolLibrary.genruntimeconfig.cache
 /home/weilon/Desktop/UselessProjects/SchoolLibrary/SchoolLibrary/obj/Debug/net8.0/ref/SchoolLibrary.dll
+/home/weilon/Desktop/UselessProjects/SchoolLibrary/SchoolLibrary/obj/Debug/net8.0/SchoolLibrary.sourcelink.json

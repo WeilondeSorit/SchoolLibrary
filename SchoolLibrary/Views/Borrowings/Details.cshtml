@@ -1,0 +1,58 @@
+@model SchoolLibrary.Models.Borrowing
+@{
+    ViewData["Title"] = $"Выдача №{Model.Id}";
+    var statusClass = Model.IsReturned ? "available" : (Model.IsOverdue ? "unavailable" : "available");
+    var statusText = Model.IsReturned ? "Возвращена" : (Model.IsOverdue ? "Просрочена" : "Активна");
+}
+
+<div class="books-page">
+    <div class="books-toolbar">
+        <div class="toolbar-form">
+            <a asp-action="Index" class="btn-reset">← К выдачам</a>
+        </div>
+        <span class="badge @statusClass">@statusText</span>
+    </div>
+
+    <div class="profile-page">
+        <aside class="profile-sidebar">
+            <div class="profile-avatar">@Model.StudentName.Substring(0, 1).ToUpper()</div>
+            <h2 class="profile-name">@Model.StudentName</h2>
+            <p class="profile-role">Ученик</p>
+        </aside>
+
+        <section class="profile-content">
+            <h3>@Model.BookTitle</h3>
+            <p class="book-author">@Model.AuthorName</p>
+
+            <div class="borrow-list" style="margin-top: 24px;">
+                <div class="borrow-card">
+                    <div class="borrow-info">
+                        <h4>Дата выдачи</h4>
+                        <p class="borrow-author">@Model.BorrowDate.ToString("dd.MM.yyyy")</p>
+                    </div>
+                    <div class="borrow-info">
+                        <h4>Вернуть до</h4>
+                        <p class="borrow-author @(Model.IsOverdue ? "danger" : "")">
+                            @Model.DueDate.ToString("dd.MM.yyyy")
+                        </p>
+                    </div>
+                    <div class="borrow-info">
+                        <h4>Дата возврата</h4>
+                        <p class="borrow-author">
+                            @(Model.ReturnDate?.ToString("dd.MM.yyyy") ?? "—")
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            @if (!Model.IsReturned)
+            {
+                <div class="form-actions" style="margin-top: 24px;">
+                    <form asp-controller="Books" asp-action="Return" asp-route-id="@Model.Id" method="post" class="inline-form">
+                        <button type="submit" class="btn-return">Отметить возврат</button>
+                    </form>
+                </div>
+            }
+        </section>
+    </div>
+</div>

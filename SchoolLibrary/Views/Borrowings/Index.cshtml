@@ -1,0 +1,55 @@
+@model List<SchoolLibrary.Models.Borrowing>
+@{
+    ViewData["Title"] = "Выдачи";
+    var active = Model.Where(b => !b.IsReturned).ToList();
+    var overdue = Model.Where(b => b.IsOverdue).ToList();
+    var returned = Model.Where(b => b.IsReturned).ToList();
+}
+
+<div class="books-page">
+    <div class="books-toolbar">
+        <div class="toolbar-form">
+            <span class="book-title">Всего выдач: @Model.Count</span>
+            <span class="badge available">Активных: @active.Count</span>
+            <span class="badge unavailable">Просрочено: @overdue.Count</span>
+        </div>
+        <a asp-controller="Books" asp-action="Index" class="btn-reset">← К книгам</a>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <p>Список выдач пуст</p>
+        </div>
+    }
+    else
+    {
+        <div class="profile-content">
+            <div class="borrow-list">
+                @foreach (var b in Model)
+                {
+                    <div class="borrow-card @(b.IsOverdue ? "overdue" : "")">
+                        <div class="borrow-info">
+                            <h4>@b.BookTitle</h4>
+                            <p class="borrow-author">@b.AuthorName · @b.StudentName</p>
+                        </div>
+                        <div class="borrow-dates">
+                            <div>
+                                <span class="label">Взята</span>
+                                <span class="value">@b.BorrowDate.ToString("dd.MM.yyyy")</span>
+                            </div>
+                            <div>
+                                <span class="label">Вернуть до</span>
+                                <span class="value @(b.IsOverdue ? "danger" : "")">
+                                    @b.DueDate.ToString("dd.MM.yyyy")
+                                </span>
+                            </div>
+                        </div>
+                        <a asp-action="Details" asp-route-id="@b.Id" class="btn-details">Открыть</a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
