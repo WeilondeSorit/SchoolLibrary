@@ -1,0 +1,92 @@
+@model SchoolLibrary.Models.Book
+@{
+    ViewData["Title"] = Model.Title;
+    var role = ViewBag.Role as string ?? Context.Session.GetString("UserRole");
+    var isLibrarian = role == "Librarian";
+    var authors = Model.Authors is { Count: > 0 }
+        ? string.Join(", ", Model.Authors.Select(a => a.FullName))
+        : "—";
+}
+
+<div class="books-page">
+    <div class="books-toolbar">
+        <div class="toolbar-form">
+            <a asp-action="Index" class="btn-reset">← К каталогу</a>
+        </div>
+
+        @if (isLibrarian)
+        {
+            <div style="display: flex; gap: 8px;">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-reset">✏️ Редактировать</a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn-reset">🗑️ Удалить</a>
+            </div>
+        }
+    </div>
+
+    <div class="profile-page">
+        <aside class="profile-sidebar">
+            <div class="book-cover" style="height: 260px; border-radius: 12px;">
+                @if (!string.IsNullOrEmpty(Model.CoverUrl))
+                {
+                    <img src="@Model.CoverUrl" alt="@Model.Title" />
+                }
+                else
+                {
+                    <span class="cover-placeholder">📖</span>
+                }
+
+                @if (Model.AvailableCopies > 0)
+                {
+                    <span class="badge available">В наличии: @Model.AvailableCopies</span>
+                }
+                else
+                {
+                    <span class="badge unavailable">Нет в наличии</span>
+                }
+            </div>
+
+            @if (!isLibrarian && Model.AvailableCopies > 0)
+            {
+                <form asp-action="Borrow" asp-route-id="@Model.Id" method="post" style="margin-top: 16px;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-borrow" style="width: 100%; padding: 12px;">
+                        Взять книгу
+                    </button>
+                </form>
+            }
+        </aside>
+
+        <section class="profile-content">
+            <h1 class="book-title" style="font-size: 24px; margin: 0 0 6px;">@Model.Title</h1>
+            <p class="book-author" style="font-size: 15px;">@authors</p>
+
+            <div class="borrow-list" style="margin-top: 24px;">
+                <div class="borrow-card">
+                    <div class="borrow-info">
+                        <h4>Жанр</h4>
+                        <p class="borrow-author">@(Model.Genre ?? "—")</p>
+                    </div>
+                    <div class="borrow-info">
+                        <h4>Год издания</h4>
+                        <p class="borrow-author">@(Model.Year?.ToString() ?? "—")</p>
+                    </div>
+                    <div class="borrow-info">
+                        <h4>ISBN</h4>
+                        <p class="borrow-author">@(Model.Isbn ?? "—")</p>
+                    </div>
+                </div>
+
+                <div class="borrow-card">
+                    <div class="borrow-info">
+                        <h4>Всего экземпляров</h4>
+                        <p class="borrow-author">@Model.TotalCopies</p>
+                    </div>
+                    <div class="borrow-info">
+                        <h4>Доступно сейчас</h4>
+                        <p class="borrow-author">@Model.AvailableCopies</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

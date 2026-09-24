@@ -30,8 +30,8 @@
 
                     <div class="book-body">
                         <h3 class="book-title">@author.FullName</h3>
-                        <p class="book-author">@author.Country</p>
-                        <p class="book-meta">@author.Bio</p>
+                        <p class="book-author">@(author.Country ?? "—")</p>
+                        <p class="book-meta">@(author.Bio ?? "—")</p>
                     </div>
 
                     <div class="book-actions">

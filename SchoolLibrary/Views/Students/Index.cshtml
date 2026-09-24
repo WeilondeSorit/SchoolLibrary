@@ -30,8 +30,8 @@
 
                     <div class="book-body">
                         <h3 class="book-title">@student.FullName</h3>
-                        <p class="book-author">Класс: @student.ClassName</p>
-                        <p class="book-meta">@student.Email</p>
+                        <p class="book-author">Класс: @(student.ClassName ?? "—")</p>
+                        <p class="book-meta">@(student.Email ?? "—")</p>
                     </div>
 
                     <div class="book-actions">

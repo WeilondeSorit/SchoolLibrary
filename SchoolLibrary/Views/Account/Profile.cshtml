@@ -8,13 +8,12 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
-        <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 }
 
 <div class="profile-page">
 
     <aside class="profile-sidebar">
-        <div class="profile-avatar">@name?.Substring(0,1).ToUpper()</div>
+        <div class="profile-avatar">@(string.IsNullOrEmpty(name) ? "?" : name.Substring(0, 1).ToUpper())</div>
         <h2 class="profile-name">@name</h2>
         <p class="profile-role">@(isLibrarian ? "Библиотекарь" : "Ученик")</p>
 
@@ -26,15 +25,10 @@
         {
             <h3>Панель библиотекаря</h3>
             <div class="librarian-grid">
-                <!-- Change this images later -->
-                <a asp-controller="Books"      asp-action="Index" class="librarian-card">
-                                    <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" /><span>Книги</span></a>
-                <a asp-controller="Authors"    asp-action="Index" class="librarian-card">
-                                    <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" /><span>Авторы</span></a>
-                <a asp-controller="Students"   asp-action="Index" class="librarian-card">
-                                    <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" /><span>Ученики</span></a>
-                <a asp-controller="Borrowings" asp-action="Index" class="librarian-card">
-                                    <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" /><span>Выдачи</span></a>
+                <a asp-controller="Books"      asp-action="Index" class="librarian-card">📚<span>Книги</span></a>
+                <a asp-controller="Authors"    asp-action="Index" class="librarian-card">✍️<span>Авторы</span></a>
+                <a asp-controller="Students"   asp-action="Index" class="librarian-card">🎓<span>Ученики</span></a>
+                <a asp-controller="Borrowings" asp-action="Index" class="librarian-card">📋<span>Выдачи</span></a>
             </div>
         }
         else
@@ -50,10 +44,15 @@
                 <div class="borrow-list">
                     @foreach (var b in Model)
                     {
+                        var bookTitle = b.Book?.Title ?? "—";
+                        var authors = b.Book?.Authors is { Count: > 0 }
+                            ? string.Join(", ", b.Book.Authors.Select(a => a.FullName))
+                            : "—";
+
                         <div class="borrow-card @(b.IsOverdue ? "overdue" : "")">
                             <div class="borrow-info">
-                                <h4>@b.BookTitle</h4>
-                                <p class="borrow-author">@b.AuthorName</p>
+                                <h4>@bookTitle</h4>
+                                <p class="borrow-author">@authors</p>
                             </div>
                             <div class="borrow-dates">
                                 <div>
@@ -68,6 +67,7 @@
                                 </div>
                             </div>
                             <form asp-controller="Books" asp-action="Return" asp-route-id="@b.Id" method="post">
+                                @Html.AntiForgeryToken()
                                 <button type="submit" class="btn-return">Вернуть</button>
                             </form>
                         </div>

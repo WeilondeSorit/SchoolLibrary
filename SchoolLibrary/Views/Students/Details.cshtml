@@ -1,7 +1,7 @@
 @model SchoolLibrary.Models.Student
 @{
     ViewData["Title"] = Model.FullName;
-    var studentBorrowings = MockData.Borrowings.Where(b => b.StudentId == Model.Id).ToList();
+    var studentBorrowings = ViewBag.Borrowings as List<SchoolLibrary.Models.Borrowing> ?? new();
 }
 
 <div class="books-page">
@@ -15,8 +15,8 @@
         <aside class="profile-sidebar">
             <div class="profile-avatar">@Model.FullName.Substring(0, 1).ToUpper()</div>
             <h2 class="profile-name">@Model.FullName</h2>
-            <p class="profile-role">Класс: @Model.ClassName</p>
-            <p class="profile-role">@Model.Email</p>
+            <p class="profile-role">Класс: @(Model.ClassName ?? "—")</p>
+            <p class="profile-role">@(Model.Email ?? "—")</p>
         </aside>
 
         <section class="profile-content">
@@ -34,10 +34,15 @@
                 <div class="borrow-list">
                     @foreach (var b in studentBorrowings)
                     {
+                        var bookTitle = b.Book?.Title ?? "—";
+                        var authors = b.Book?.Authors is { Count: > 0 }
+                            ? string.Join(", ", b.Book.Authors.Select(a => a.FullName))
+                            : "—";
+
                         <div class="borrow-card @(b.IsOverdue ? "overdue" : "")">
                             <div class="borrow-info">
-                                <h4>@b.BookTitle</h4>
-                                <p class="borrow-author">@b.AuthorName</p>
+                                <h4>@bookTitle</h4>
+                                <p class="borrow-author">@authors</p>
                             </div>
                             <div class="borrow-dates">
                                 <div>

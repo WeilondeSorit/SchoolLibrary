@@ -1,7 +1,7 @@
 @model SchoolLibrary.Models.Author
 @{
     ViewData["Title"] = Model.FullName;
-    var authorBooks = MockData.Books.Where(b => b.AuthorId == Model.Id).ToList();
+    var authorBooks = Model.Books.ToList();
 }
 
 <div class="books-page">
@@ -15,12 +15,12 @@
         <aside class="profile-sidebar">
             <div class="profile-avatar">@Model.FullName.Substring(0, 1).ToUpper()</div>
             <h2 class="profile-name">@Model.FullName</h2>
-            <p class="profile-role">@Model.Country</p>
+            <p class="profile-role">@(Model.Country ?? "—")</p>
         </aside>
 
         <section class="profile-content">
             <h3>Об авторе</h3>
-            <p class="book-meta">@Model.Bio</p>
+            <p class="book-meta">@(Model.Bio ?? "—")</p>
 
             <h3 style="margin-top: 28px;">Книги в библиотеке</h3>
             @if (authorBooks.Count == 0)
@@ -38,7 +38,9 @@
                         <div class="borrow-card">
                             <div class="borrow-info">
                                 <h4>@book.Title</h4>
-                                <p class="borrow-author">@book.Genre · @book.Year</p>
+                                <p class="borrow-author">
+                                    @(book.Genre ?? "—") · @(book.Year?.ToString() ?? "—")
+                                </p>
                             </div>
                             <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="btn-details">Открыть</a>
                         </div>

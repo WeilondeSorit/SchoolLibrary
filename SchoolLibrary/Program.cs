@@ -1,11 +1,29 @@
+using Microsoft.EntityFrameworkCore;
+using SchoolLibrary.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString =
+    Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Единственная регистрация DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString, npgsql =>
+    {
+        npgsql.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorCodesToAdd: null);
+    }));
+
 builder.Services.AddControllersWithViews();
-builder.Services.AddSession(options =>
+
+builder.Services.AddSession(o =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(60);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
+    o.IdleTimeout = TimeSpan.FromMinutes(60);
+    o.Cookie.HttpOnly = true;
+    o.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
@@ -18,11 +36,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
-// Показывать красивую 404-страницу при любом необработанном 404
-app.UseStatusCodePagesWithReExecute("/Home/NotFound");
+//app.UseStatusCodePagesWithReExecute("/Home/NotFound");
 
 app.UseSession();
 app.UseAuthorization();

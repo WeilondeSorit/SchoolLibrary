@@ -87,7 +87,8 @@
                         <h3 class="book-title">@book.Title</h3>
                         <p class="book-author">@book.AuthorName</p>
                         <p class="book-meta">
-                            <span>@book.Genre</span> · <span>@book.Year</span>
+                            <span>@(book.Genre ?? "—")</span> ·
+                            <span>@(book.Year?.ToString() ?? "—")</span>
                         </p>
                     </div>
 
@@ -102,6 +103,7 @@
                         else if (book.AvailableCopies > 0)
                         {
                             <form asp-action="Borrow" asp-route-id="@book.Id" method="post" class="inline-form">
+                                @Html.AntiForgeryToken()
                                 <button type="submit" class="btn-borrow">Взять книгу</button>
                             </form>
                         }

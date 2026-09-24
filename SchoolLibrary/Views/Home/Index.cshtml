@@ -14,12 +14,19 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <img src="~/images/logo.png" alt="Логотип библиотеки" class="login-logo" />
+                <img src="~/images/logo.png" alt="Логотип" class="login-logo" />
                 <h1>Школьная библиотека</h1>
                 <p>Войдите, чтобы продолжить</p>
             </div>
 
+            @if (ViewBag.Error != null)
+            {
+                <div class="login-error">@ViewBag.Error</div>
+            }
+
             <form asp-controller="Home" asp-action="Login" method="post" class="login-form">
+                @Html.AntiForgeryToken()
+
                 <div class="form-group">
                     <label for="login">Логин</label>
                     <input id="login" name="login" type="text" class="form-control" placeholder="Введите логин" required />
@@ -30,16 +37,33 @@
                     <input id="password" name="password" type="password" class="form-control" placeholder="Введите пароль" required />
                 </div>
 
-                <div class="form-group">
-                    <label for="role">Роль</label>
-                    <select id="role" name="role" class="form-control">
-                        <option value="Student">Ученик</option>
-                        <option value="Librarian">Библиотекарь</option>
-                    </select>
-                </div>
-
                 <button type="submit" class="btn-login">Войти</button>
             </form>
+
+            <p class="login-register-link">
+                Нет аккаунта? <a asp-controller="Account" asp-action="Register">Зарегистрироваться</a>
+            </p>
         </div>
     </div>
 </div>
+
+<style>
+    .login-error {
+        background: rgba(239, 68, 68, 0.18);
+        border: 1px solid rgba(239, 68, 68, 0.5);
+        color: #fecaca;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        margin-bottom: 16px;
+        text-align: center;
+    }
+    .login-register-link {
+        text-align: center;
+        margin-top: 18px;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 13px;
+    }
+    .login-register-link a { color: #a5b4fc; text-decoration: none; font-weight: 600; }
+    .login-register-link a:hover { text-decoration: underline; }
+</style>

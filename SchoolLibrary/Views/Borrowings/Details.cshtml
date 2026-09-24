@@ -2,7 +2,13 @@
 @{
     ViewData["Title"] = $"Выдача №{Model.Id}";
     var statusClass = Model.IsReturned ? "available" : (Model.IsOverdue ? "unavailable" : "available");
-    var statusText = Model.IsReturned ? "Возвращена" : (Model.IsOverdue ? "Просрочена" : "Активна");
+    var statusText  = Model.IsReturned ? "Возвращена" : (Model.IsOverdue ? "Просрочена" : "Активна");
+
+    var studentName = Model.Student?.FullName ?? "—";
+    var bookTitle   = Model.Book?.Title ?? "—";
+    var authors     = Model.Book?.Authors is { Count: > 0 }
+        ? string.Join(", ", Model.Book.Authors.Select(a => a.FullName))
+        : "—";
 }
 
 <div class="books-page">
@@ -15,14 +21,14 @@
 
     <div class="profile-page">
         <aside class="profile-sidebar">
-            <div class="profile-avatar">@Model.StudentName.Substring(0, 1).ToUpper()</div>
-            <h2 class="profile-name">@Model.StudentName</h2>
+            <div class="profile-avatar">@(studentName.Substring(0, 1).ToUpper())</div>
+            <h2 class="profile-name">@studentName</h2>
             <p class="profile-role">Ученик</p>
         </aside>
 
         <section class="profile-content">
-            <h3>@Model.BookTitle</h3>
-            <p class="book-author">@Model.AuthorName</p>
+            <h3>@bookTitle</h3>
+            <p class="book-author">@authors</p>
 
             <div class="borrow-list" style="margin-top: 24px;">
                 <div class="borrow-card">
@@ -49,6 +55,7 @@
             {
                 <div class="form-actions" style="margin-top: 24px;">
                     <form asp-controller="Books" asp-action="Return" asp-route-id="@Model.Id" method="post" class="inline-form">
+                        @Html.AntiForgeryToken()
                         <button type="submit" class="btn-return">Отметить возврат</button>
                     </form>
                 </div>

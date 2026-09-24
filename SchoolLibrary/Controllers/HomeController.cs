@@ -1,22 +1,55 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SchoolLibrary.Data;
+using SchoolLibrary.Services;
 
 namespace SchoolLibrary.Controllers;
 
 public class HomeController : Controller
 {
-    // GET: /  — страница авторизации
+    private readonly AppDbContext _db;
+    public HomeController(AppDbContext db) => _db = db;
+
     public IActionResult Index() => View();
 
-    // POST: /Home/Login
+[HttpGet]
+public IActionResult Login() => RedirectToAction(nameof(Index));
+
     [HttpPost]
-    public IActionResult Login(string login, string password, string role)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(string login, string password)
     {
-        HttpContext.Session.SetString("UserName", string.IsNullOrWhiteSpace(login) ? "Гость" : login);
-        HttpContext.Session.SetString("UserRole", role ?? "Student");
-        return RedirectToAction("Index", "Books");
+        if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
+        {
+            ViewBag.Error = "Введите логин и пароль";
+            return View("Index");
+        }
+
+        try
+        {
+            var user = await _db.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Login == login);
+
+            if (user is null || !PasswordHasher.Verify(password, user.PasswordHash))
+            {
+                ViewBag.Error = "Неверный логин или пароль";
+                return View("Index");
+            }
+
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("UserName", user.DisplayName);
+            HttpContext.Session.SetString("UserRole", user.Role?.Name ?? "Student");
+
+            return RedirectToAction("Index", "Books");
+        }
+        catch (Exception ex)
+        {
+            ViewBag.Error = $"Ошибка подключения к БД: {ex.Message}";
+            return View("Index");
+        }
     }
 
-    // GET: /Home/NotFound  — страница 404
     [Route("Home/NotFound")]
     public IActionResult NotFoundPage()
     {

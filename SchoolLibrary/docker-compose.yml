@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: main_db
+      POSTGRES_USER: main_user
+      POSTGRES_PASSWORD: MainTestAppPass
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U main_user -d main_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s          
+
+  web:
+    build: .
+    ports:
+      - "5000:8080"
+    environment:
+      - DATABASE_URL=Host=postgres;Port=5432;Database=main_db;Username=main_user;Password=MainTestAppPass;SslMode=Disable;Timeout=60;Command Timeout=60;Include Error Detail=true
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Production
+    volumes:
+      - dataprotection-keys:/root/.aspnet/DataProtection-Keys
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  dataprotection-keys:
+
+networks:
+  app-network:
+    driver: bridge

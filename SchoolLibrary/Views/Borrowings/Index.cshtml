@@ -3,7 +3,6 @@
     ViewData["Title"] = "Выдачи";
     var active = Model.Where(b => !b.IsReturned).ToList();
     var overdue = Model.Where(b => b.IsOverdue).ToList();
-    var returned = Model.Where(b => b.IsReturned).ToList();
 }
 
 <div class="books-page">
@@ -29,10 +28,14 @@
             <div class="borrow-list">
                 @foreach (var b in Model)
                 {
+                    var authors = b.Book?.Authors is { Count: > 0 }
+                        ? string.Join(", ", b.Book.Authors.Select(a => a.FullName))
+                        : "—";
+
                     <div class="borrow-card @(b.IsOverdue ? "overdue" : "")">
                         <div class="borrow-info">
-                            <h4>@b.BookTitle</h4>
-                            <p class="borrow-author">@b.AuthorName · @b.StudentName</p>
+                            <h4>@(b.Book?.Title ?? "—")</h4>
+                            <p class="borrow-author">@authors · @(b.Student?.FullName ?? "—")</p>
                         </div>
                         <div class="borrow-dates">
                             <div>

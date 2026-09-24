@@ -1,0 +1,101 @@
+@model SchoolLibrary.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Регистрация";
+    Layout = "_LayoutLogin";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+}
+
+<div class="login-page">
+    <div class="login-bg"></div>
+    <div class="login-overlay"></div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="~/images/logo.png" alt="Логотип" class="login-logo" />
+                <h1>Регистрация</h1>
+                <p>Создайте аккаунт школьной библиотеки</p>
+            </div>
+
+            <form asp-action="Register" method="post" class="login-form">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="login-error"></div>
+
+                <div class="form-group">
+                    <label asp-for="Login">Логин</label>
+                    <input asp-for="Login" class="form-control" placeholder="Например: ivanov" />
+                    <span asp-validation-for="Login" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DisplayName">ФИО</label>
+                    <input asp-for="DisplayName" class="form-control" placeholder="Иванов Иван" />
+                    <span asp-validation-for="DisplayName" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password">Пароль</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Минимум 5 символов" />
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PasswordConfirm">Повторите пароль</label>
+                    <input asp-for="PasswordConfirm" type="password" class="form-control" />
+                    <span asp-validation-for="PasswordConfirm" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Role">Роль</label>
+                    <select asp-for="Role" class="form-control" id="roleSelect">
+                        <option value="Student">Ученик</option>
+                        <option value="Librarian">Библиотекарь</option>
+                    </select>
+                </div>
+
+                <div id="studentFields">
+                    <div class="form-group">
+                        <label asp-for="ClassName">Класс</label>
+                        <input asp-for="ClassName" class="form-control" placeholder="10А" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email">Email</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="student@school.ru" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login">Зарегистрироваться</button>
+            </form>
+
+            <p class="login-register-link">
+                Уже есть аккаунт? <a asp-controller="Home" asp-action="Index">Войти</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const roleSelect = document.getElementById('roleSelect');
+        const studentFields = document.getElementById('studentFields');
+        function toggleStudentFields() {
+            studentFields.style.display = roleSelect.value === 'Student' ? 'block' : 'none';
+        }
+        roleSelect.addEventListener('change', toggleStudentFields);
+        toggleStudentFields();
+    </script>
+}
+
+<style>
+    .field-error {
+        display: block;
+        color: #fecaca;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+</style>
