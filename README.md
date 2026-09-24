@@ -134,7 +134,7 @@ tree -L 4
 - Install Docker Compose
 - Run
   ```bash
-  git clone https://github.com/WeilondeSorit/SchoolLibrary.git && cd SchoolLibrary
+  git clone https://github.com/WeilondeSorit/SchoolLibrary.git && cd SchoolLibrary/SchoolLibrary
   ```
 - Run
   ```bash
