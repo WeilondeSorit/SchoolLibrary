@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Ошибка";
+    Layout = "_LayoutLogin";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/notfound.css" asp-append-version="true" />
+}
+
+<div class="nf-page">
+    <div class="nf-bg"></div>
+    <div class="nf-overlay"></div>
+
+    <div class="nf-content">
+        <div class="nf-code">500</div>
+        <div class="nf-icon">⚠️</div>
+
+        <h1 class="nf-title">Что-то пошло не так</h1>
+        <p class="nf-text">
+            Мы уже знаем о проблеме и работаем над ней.<br />
+            Попробуйте обновить страницу позже.
+        </p>
+
+        <div class="nf-actions">
+            <a asp-controller="Books" asp-action="Index" class="nf-btn nf-btn-primary">
+                📚 К каталогу
+            </a>
+            <a asp-controller="Home" asp-action="Index" class="nf-btn nf-btn-ghost">
+                На главную
+            </a>
+        </div>
+    </div>
+</div>

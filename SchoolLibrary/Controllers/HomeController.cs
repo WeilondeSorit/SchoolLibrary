@@ -10,11 +10,14 @@ public class HomeController : Controller
     private readonly AppDbContext _db;
     public HomeController(AppDbContext db) => _db = db;
 
+    // GET: /
     public IActionResult Index() => View();
 
-[HttpGet]
-public IActionResult Login() => RedirectToAction(nameof(Index));
+    // GET: /Home/Login → редирект на страницу входа
+    [HttpGet]
+    public IActionResult Login() => RedirectToAction(nameof(Index));
 
+    // POST: /Home/Login
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(string login, string password)
@@ -50,6 +53,16 @@ public IActionResult Login() => RedirectToAction(nameof(Index));
         }
     }
 
+    // GET: /Home/Error — обработчик исключений
+    [Route("Home/Error")]
+    public IActionResult Error()
+    {
+        // Важно: не выставляем Response.StatusCode здесь вручную.
+        // Middleware выставит 500 сам.
+        return View();
+    }
+
+    // GET: /Home/NotFound — страница 404
     [Route("Home/NotFound")]
     public IActionResult NotFoundPage()
     {
