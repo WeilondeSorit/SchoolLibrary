@@ -38,7 +38,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-//app.UseStatusCodePagesWithReExecute("/Home/NotFound");
+app.UseStatusCodePagesWithReExecute("/Home/NotFound");
 
 app.UseSession();
 app.UseAuthorization();
