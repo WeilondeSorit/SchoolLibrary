@@ -1,4 +1,4 @@
--- Расширение для bcrypt
+-- init.sql
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 DROP TABLE IF EXISTS borrowings    CASCADE;
@@ -9,17 +9,11 @@ DROP TABLE IF EXISTS students      CASCADE;
 DROP TABLE IF EXISTS users         CASCADE;
 DROP TABLE IF EXISTS roles         CASCADE;
 
--- ============================
--- Роли (Librarian / Student) — справочник
--- ============================
 CREATE TABLE roles (
     id   SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
--- ============================
--- Пользователи
--- ============================
 CREATE TABLE users (
     id            SERIAL PRIMARY KEY,
     login         VARCHAR(100) NOT NULL UNIQUE,
@@ -28,12 +22,8 @@ CREATE TABLE users (
     role_id       INTEGER NOT NULL REFERENCES roles(id) ON DELETE RESTRICT,
     created_at    TIMESTAMP NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX idx_users_role ON users(role_id);
 
--- ============================
--- Авторы
--- ============================
 CREATE TABLE authors (
     id        SERIAL PRIMARY KEY,
     full_name VARCHAR(200) NOT NULL,
@@ -41,9 +31,6 @@ CREATE TABLE authors (
     bio       TEXT
 );
 
--- ============================
--- Книги
--- ============================
 CREATE TABLE books (
     id               SERIAL PRIMARY KEY,
     title            VARCHAR(300) NOT NULL,
@@ -52,21 +39,16 @@ CREATE TABLE books (
     isbn             VARCHAR(20) UNIQUE,
     total_copies     INTEGER NOT NULL DEFAULT 1 CHECK (total_copies >= 0),
     available_copies INTEGER NOT NULL DEFAULT 1 CHECK (available_copies >= 0),
-    cover_url        VARCHAR(500)
+    cover_url        VARCHAR(500),
+    is_hidden        BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- ============================
--- M:N книги ↔ авторы
--- ============================
 CREATE TABLE book_authors (
     book_id   INTEGER NOT NULL REFERENCES books(id)   ON DELETE CASCADE,
     author_id INTEGER NOT NULL REFERENCES authors(id) ON DELETE CASCADE,
     PRIMARY KEY (book_id, author_id)
 );
 
--- ============================
--- Ученики (привязка к аккаунту — опциональная)
--- ============================
 CREATE TABLE students (
     id         SERIAL PRIMARY KEY,
     user_id    INTEGER UNIQUE REFERENCES users(id) ON DELETE SET NULL,
@@ -75,9 +57,6 @@ CREATE TABLE students (
     email      VARCHAR(200) UNIQUE
 );
 
--- ============================
--- Выдачи
--- ============================
 CREATE TABLE borrowings (
     id          SERIAL PRIMARY KEY,
     book_id     INTEGER NOT NULL REFERENCES books(id)    ON DELETE CASCADE,
@@ -88,9 +67,6 @@ CREATE TABLE borrowings (
     CONSTRAINT chk_due_after_borrow CHECK (due_date >= borrow_date)
 );
 
--- ============================
--- Данные
--- ============================
 INSERT INTO roles (name) VALUES ('Librarian'), ('Student');
 
 INSERT INTO users (login, password_hash, display_name, role_id) VALUES
@@ -103,12 +79,17 @@ INSERT INTO authors (full_name, country, bio) VALUES
 ('Джоан Роулинг', 'Великобритания', 'Автор серии книг о Гарри Поттере.'),
 ('Антуан де Сент-Экзюпери', 'Франция', 'Писатель и лётчик.');
 
-INSERT INTO books (title, genre, year, isbn, total_copies, available_copies) VALUES
-('Война и мир', 'Роман', 1869, '978-5-04-116000-1', 5, 3),
-('Преступление и наказание', 'Роман', 1866, '978-5-04-116001-8', 4, 1),
-('Гарри Поттер и философский камень', 'Фэнтези', 1997, '978-5-389-07435-4', 8, 5),
-('Маленький принц', 'Сказка', 1943, '978-5-699-66295-1', 6, 6),
-('Анна Каренина', 'Роман', 1877, '978-5-04-116002-5', 3, 0);
+INSERT INTO books (title, genre, year, isbn, total_copies, available_copies, cover_url) VALUES
+('Война и мир', 'Роман', 1869, '978-5-04-116000-1', 5, 3,
+ 'https://miro.medium.com/v2/resize:fit:940/1*Cevh60xB-bvC6STwGz8IMA.png'),
+('Преступление и наказание', 'Роман', 1866, '978-5-04-116001-8', 4, 1,
+ 'https://covers.openlibrary.org/b/isbn/9785041160018-L.jpg'),
+('Гарри Поттер и философский камень', 'Фэнтези', 1997, '978-5-389-07435-4', 8, 5,
+ 'https://covers.openlibrary.org/b/isbn/9785389074354-L.jpg'),
+('Маленький принц', 'Сказка', 1943, '978-5-699-66295-1', 6, 6,
+ 'https://covers.openlibrary.org/b/isbn/9785699662951-L.jpg'),
+('Анна Каренина', 'Роман', 1877, '978-5-04-116002-5', 3, 0,
+ 'https://covers.openlibrary.org/b/isbn/9785041160025-L.jpg');
 
 INSERT INTO book_authors (book_id, author_id) VALUES
 (1,1),(2,2),(3,3),(4,4),(5,1);

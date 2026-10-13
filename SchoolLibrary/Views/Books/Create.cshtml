@@ -1,52 +1,112 @@
-@model SchoolLibrary.Models.Book
+@model SchoolLibrary.ViewModels.BookFormViewModel
 @{
     ViewData["Title"] = "Добавить книгу";
+    var authors = ViewBag.Authors as List<SchoolLibrary.Models.Author> ?? new();
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
 }
 
-<div class="form-page">
-    <h1>Добавить книгу</h1>
+<div class="books-page">
+    <div class="books-toolbar">
+        <div class="toolbar-form">
+            <a asp-action="Index" class="btn-reset">← К каталогу</a>
+        </div>
+    </div>
 
-    <form asp-action="Create" method="post" class="app-form">
-        <div class="form-group">
-            <label>Название</label>
-            <input asp-for="Title" class="form-control" required />
-        </div>
-        <div class="form-group">
-            <label>Автор</label>
-            <input asp-for="AuthorName" class="form-control" required />
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Жанр</label>
-                <input asp-for="Genre" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label>Год</label>
-                <input asp-for="Year" type="number" class="form-control" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label>ISBN</label>
-            <input asp-for="Isbn" class="form-control" />
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Всего экземпляров</label>
-                <input asp-for="TotalCopies" type="number" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label>Доступно</label>
-                <input asp-for="AvailableCopies" type="number" class="form-control" />
-            </div>
-        </div>
+    <div class="form-page">
+        <h1>Добавить книгу</h1>
 
-        <div class="form-actions">
-            <button type="submit" class="btn-primary">Сохранить</button>
-            <a asp-action="Index" class="btn-secondary">Отмена</a>
-        </div>
-    </form>
+        <form asp-action="Create" method="post" enctype="multipart/form-data" class="app-form">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="field-error"></div>
+
+            <div class="form-group">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" class="form-control" placeholder="Например: Война и мир" />
+                <span asp-validation-for="Title" class="field-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AuthorIds"></label>
+                @if (authors.Count == 0)
+                {
+                    <p class="book-meta">Авторов пока нет.</p>
+                }
+                else
+                {
+                    <select asp-for="AuthorIds" class="form-control" multiple size="6">
+                        @foreach (var a in authors)
+                        {
+                            <option value="@a.Id">@a.FullName</option>
+                        }
+                    </select>
+                    <p class="book-meta" style="margin-top:6px;">
+                        Удерживайте <b>Ctrl</b> (Cmd), чтобы выбрать нескольких авторов.
+                    </p>
+                }
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Genre"></label>
+                    <input asp-for="Genre" class="form-control" />
+                    <span asp-validation-for="Genre" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Year"></label>
+                    <input asp-for="Year" type="number" class="form-control" />
+                    <span asp-validation-for="Year" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Isbn"></label>
+                <input asp-for="Isbn" class="form-control" />
+                <span asp-validation-for="Isbn" class="field-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="TotalCopies"></label>
+                    <input asp-for="TotalCopies" type="number" min="0" class="form-control" />
+                    <span asp-validation-for="TotalCopies" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AvailableCopies"></label>
+                    <input asp-for="AvailableCopies" type="number" min="0" class="form-control" />
+                    <span asp-validation-for="AvailableCopies" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CoverUrl"></label>
+                <input asp-for="CoverUrl" class="form-control" placeholder="https://..." />
+                <span asp-validation-for="CoverUrl" class="field-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ImageFile"></label>
+                <input asp-for="ImageFile" type="file" accept="image/*" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label style="display:flex; align-items:center; gap:8px;">
+                    <input asp-for="IsHidden" type="checkbox" />
+                    <span>@Html.DisplayNameFor(m => m.IsHidden)</span>
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Сохранить</button>
+                <a asp-action="Index" class="btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

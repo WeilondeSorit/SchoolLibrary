@@ -1,0 +1,107 @@
+@model SchoolLibrary.ViewModels.BookFormViewModel
+@{
+    ViewData["Title"] = "Редактировать книгу";
+    var authors = ViewBag.Authors as List<SchoolLibrary.Models.Author> ?? new();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
+}
+
+<div class="books-page">
+    <div class="books-toolbar">
+        <div class="toolbar-form">
+            <a asp-action="Index" class="btn-reset">← К каталогу</a>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn-reset">К книге</a>
+        </div>
+    </div>
+
+    <div class="form-page">
+        <h1>Редактировать книгу</h1>
+
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" class="app-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div asp-validation-summary="ModelOnly" class="field-error"></div>
+
+            <div class="form-group">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="field-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AuthorIds"></label>
+                <select asp-for="AuthorIds" class="form-control" multiple size="6">
+                    @foreach (var a in authors)
+                    {
+                        <option value="@a.Id" selected="@(Model.AuthorIds.Contains(a.Id))">
+                            @a.FullName
+                        </option>
+                    }
+                </select>
+                <p class="book-meta" style="margin-top:6px;">Ctrl/Cmd для множественного выбора.</p>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Genre"></label>
+                    <input asp-for="Genre" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Year"></label>
+                    <input asp-for="Year" type="number" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Isbn"></label>
+                <input asp-for="Isbn" class="form-control" />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="TotalCopies"></label>
+                    <input asp-for="TotalCopies" type="number" min="0" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="AvailableCopies"></label>
+                    <input asp-for="AvailableCopies" type="number" min="0" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CoverUrl"></label>
+                <input asp-for="CoverUrl" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ImageFile"></label>
+                <input asp-for="ImageFile" type="file" accept="image/*" class="form-control" />
+                @if (!string.IsNullOrEmpty(Model.CoverUrl))
+                {
+                    <p class="book-meta" style="margin-top:6px;">
+                        Текущая обложка: <a href="@Model.CoverUrl" target="_blank">@Model.CoverUrl</a>
+                    </p>
+                }
+            </div>
+
+            <div class="form-group">
+                <label style="display:flex; align-items:center; gap:8px;">
+                    <input asp-for="IsHidden" type="checkbox" />
+                    <span>@Html.DisplayNameFor(m => m.IsHidden)</span>
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Сохранить изменения</button>
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

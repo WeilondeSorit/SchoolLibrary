@@ -1,0 +1,58 @@
+@model SchoolLibrary.Models.Book
+@{
+    ViewData["Title"] = "Скрыть книгу";
+    var activeBorrowings = ViewBag.ActiveBorrowings as int? ?? 0;
+    var authors = Model.Authors is { Count: > 0 }
+        ? string.Join(", ", Model.Authors.Select(a => a.FullName))
+        : "—";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/books.css" asp-append-version="true" />
+}
+
+<div class="books-page">
+    <div class="books-toolbar">
+        <div class="toolbar-form">
+            <a asp-action="Index" class="btn-reset">← К каталогу</a>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn-reset">К книге</a>
+        </div>
+    </div>
+
+    <div class="form-page">
+        <h1>Скрыть книгу от учеников?</h1>
+
+        <div class="delete-warning">
+            🙈 Книга останется в базе, но ученики её больше не увидят.
+            Данные о выдачах сохранятся — если кто-то держит экземпляр, ничего не сломается.
+        </div>
+
+        <div class="delete-preview">
+            <div class="book-cover" style="height: 220px; border-radius: 12px;">
+                @if (!string.IsNullOrEmpty(Model.CoverUrl))
+                {
+                    <img src="@Model.CoverUrl" alt="@Model.Title" />
+                }
+                else
+                {
+                    <span class="cover-placeholder">📖</span>
+                }
+            </div>
+
+            <div class="delete-preview-info">
+                <h2>@Model.Title</h2>
+                <p class="book-author">@authors</p>
+                <p class="book-meta" style="margin-top:12px;">
+                    Активных выдач: <b class="@(activeBorrowings > 0 ? "danger" : "")">@activeBorrowings</b>
+                </p>
+            </div>
+        </div>
+
+        <form asp-action="Hide" asp-route-id="@Model.Id" method="post" class="form-actions">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn-danger">Скрыть</button>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn-secondary">Отмена</a>
+        </form>
+    </div>
+</div>

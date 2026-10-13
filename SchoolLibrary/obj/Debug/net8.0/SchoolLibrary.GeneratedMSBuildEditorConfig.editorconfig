@@ -42,16 +42,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQm9va3MvQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/weilon/Desktop/UselessProjects/SchoolLibrary/SchoolLibrary/Views/Books/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQm9va3MvRGVsZXRlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
 [/home/weilon/Desktop/UselessProjects/SchoolLibrary/SchoolLibrary/Views/Books/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQm9va3MvRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/home/weilon/Desktop/UselessProjects/SchoolLibrary/SchoolLibrary/Views/Books/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQm9va3MvRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/weilon/Desktop/UselessProjects/SchoolLibrary/SchoolLibrary/Views/Books/Hide.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQm9va3MvSGlkZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/home/weilon/Desktop/UselessProjects/SchoolLibrary/SchoolLibrary/Views/Books/Index.cshtml]

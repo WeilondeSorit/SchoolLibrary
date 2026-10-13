@@ -2,18 +2,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolLibrary.Data;
 using SchoolLibrary.Models;
+using SchoolLibrary.ViewModels;
 
 namespace SchoolLibrary.Controllers;
 
 public class BooksController : Controller
 {
     private readonly AppDbContext _db;
-    public BooksController(AppDbContext db) => _db = db;
+    private readonly IWebHostEnvironment _env;
 
-    // GET: /books
+    public BooksController(AppDbContext db, IWebHostEnvironment env)
+    {
+        _db = db;
+        _env = env;
+    }
+
+    // ---------- Список ----------
     public async Task<IActionResult> Index(string? search, string? sort, string? genre, bool? onlyAvailable)
     {
+        var role = HttpContext.Session.GetString("UserRole");
+        var isLibrarian = role == "Librarian";
+
         var books = _db.Books.Include(b => b.Authors).AsQueryable();
+
+        // Ученики не видят скрытые книги
+        if (!isLibrarian)
+            books = books.Where(b => !b.IsHidden);
 
         if (!string.IsNullOrWhiteSpace(search))
             books = books.Where(b => EF.Functions.ILike(b.Title, $"%{search}%")
@@ -38,80 +52,196 @@ public class BooksController : Controller
         ViewBag.Sort = sort;
         ViewBag.Genre = genre;
         ViewBag.OnlyAvailable = onlyAvailable;
-        ViewBag.Genres = await _db.Books.Select(b => b.Genre).Distinct().OrderBy(g => g).ToListAsync();
-        ViewBag.Role = HttpContext.Session.GetString("UserRole");
+        ViewBag.Genres = await _db.Books
+            .Where(b => b.Genre != null && b.Genre != "")
+            .Select(b => b.Genre!)
+            .Distinct()
+            .OrderBy(g => g)
+            .ToListAsync();
+        ViewBag.Role = role;
 
         return View(await books.ToListAsync());
     }
 
-    // GET: /books/{id}
+    // ---------- Детали ----------
     public async Task<IActionResult> Details(int id)
     {
         var book = await _db.Books.Include(b => b.Authors).FirstOrDefaultAsync(b => b.Id == id);
         if (book is null) return NotFound();
+
+        ViewBag.Role = HttpContext.Session.GetString("UserRole");
         return View(book);
     }
 
-    // GET: /books/create
-    public IActionResult Create() => View(new Book());
+    // ---------- Create ----------
+    [HttpGet]
+    public async Task<IActionResult> Create()
+    {
+        ViewBag.Authors = await _db.Authors.OrderBy(a => a.FullName).ToListAsync();
+        return View(new BookFormViewModel());
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Book book)
+    public async Task<IActionResult> Create(BookFormViewModel model)
     {
-        if (!ModelState.IsValid) return View(book);
+        if (model.AvailableCopies > model.TotalCopies)
+            ModelState.AddModelError(nameof(model.AvailableCopies),
+                "Доступных не может быть больше, чем всего экземпляров");
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Authors = await _db.Authors.OrderBy(a => a.FullName).ToListAsync();
+            return View(model);
+        }
+
+        var book = new Book
+        {
+            Title = model.Title,
+            Genre = model.Genre,
+            Year = model.Year,
+            Isbn = model.Isbn,
+            TotalCopies = model.TotalCopies,
+            AvailableCopies = model.AvailableCopies,
+            CoverUrl = model.CoverUrl,
+            IsHidden = model.IsHidden
+        };
+
+        // Загрузка файла (приоритет над URL)
+        if (model.ImageFile is { Length: > 0 })
+        {
+            var fileName = Guid.NewGuid().ToString("N") + Path.GetExtension(model.ImageFile.FileName);
+            var dir = Path.Combine(_env.WebRootPath, "uploads", "covers");
+            Directory.CreateDirectory(dir);
+            var fullPath = Path.Combine(dir, fileName);
+            await using var stream = System.IO.File.Create(fullPath);
+            await model.ImageFile.CopyToAsync(stream);
+            book.CoverUrl = "/uploads/covers/" + fileName;
+        }
+
+        if (model.AuthorIds.Count > 0)
+        {
+            var authors = await _db.Authors.Where(a => model.AuthorIds.Contains(a.Id)).ToListAsync();
+            foreach (var a in authors) book.Authors.Add(a);
+        }
+
         _db.Books.Add(book);
         await _db.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: /books/edit/{id}
+    // ---------- Edit ----------
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         var book = await _db.Books.Include(b => b.Authors).FirstOrDefaultAsync(b => b.Id == id);
         if (book is null) return NotFound();
-        return View(book);
+
+        ViewBag.Authors = await _db.Authors.OrderBy(a => a.FullName).ToListAsync();
+
+        return View(new BookFormViewModel
+        {
+            Id = book.Id,
+            Title = book.Title,
+            Genre = book.Genre,
+            Year = book.Year,
+            Isbn = book.Isbn,
+            TotalCopies = book.TotalCopies,
+            AvailableCopies = book.AvailableCopies,
+            CoverUrl = book.CoverUrl,
+            IsHidden = book.IsHidden,
+            AuthorIds = book.Authors.Select(a => a.Id).ToList()
+        });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Book form)
+    public async Task<IActionResult> Edit(int id, BookFormViewModel model)
     {
-        var book = await _db.Books.FindAsync(id);
+        if (id != model.Id) return BadRequest();
+
+        if (model.AvailableCopies > model.TotalCopies)
+            ModelState.AddModelError(nameof(model.AvailableCopies),
+                "Доступных не может быть больше, чем всего экземпляров");
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Authors = await _db.Authors.OrderBy(a => a.FullName).ToListAsync();
+            return View(model);
+        }
+
+        var book = await _db.Books.Include(b => b.Authors).FirstOrDefaultAsync(b => b.Id == id);
         if (book is null) return NotFound();
 
-        book.Title = form.Title;
-        book.Genre = form.Genre;
-        book.Year = form.Year;
-        book.Isbn = form.Isbn;
-        book.TotalCopies = form.TotalCopies;
-        book.AvailableCopies = form.AvailableCopies;
-        book.CoverUrl = form.CoverUrl;
+        book.Title = model.Title;
+        book.Genre = model.Genre;
+        book.Year = model.Year;
+        book.Isbn = model.Isbn;
+        book.TotalCopies = model.TotalCopies;
+        book.AvailableCopies = model.AvailableCopies;
+        book.IsHidden = model.IsHidden;
+
+        if (model.ImageFile is { Length: > 0 })
+        {
+            var fileName = Guid.NewGuid().ToString("N") + Path.GetExtension(model.ImageFile.FileName);
+            var dir = Path.Combine(_env.WebRootPath, "uploads", "covers");
+            Directory.CreateDirectory(dir);
+            var fullPath = Path.Combine(dir, fileName);
+            await using var stream = System.IO.File.Create(fullPath);
+            await model.ImageFile.CopyToAsync(stream);
+            book.CoverUrl = "/uploads/covers/" + fileName;
+        }
+        else if (!string.IsNullOrWhiteSpace(model.CoverUrl))
+        {
+            book.CoverUrl = model.CoverUrl;
+        }
+
+        book.Authors.Clear();
+        if (model.AuthorIds.Count > 0)
+        {
+            var authors = await _db.Authors.Where(a => model.AuthorIds.Contains(a.Id)).ToListAsync();
+            foreach (var a in authors) book.Authors.Add(a);
+        }
 
         await _db.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Details), new { id = book.Id });
     }
 
-    // GET: /books/delete/{id}
-    public async Task<IActionResult> Delete(int id)
+    // ---------- Hide / Unhide ----------
+    [HttpGet]
+    public async Task<IActionResult> Hide(int id)
     {
         var book = await _db.Books.Include(b => b.Authors).FirstOrDefaultAsync(b => b.Id == id);
         if (book is null) return NotFound();
+
+        ViewBag.ActiveBorrowings = await _db.Borrowings
+            .CountAsync(b => b.BookId == id && b.ReturnDate == null);
         return View(book);
     }
 
-    [HttpPost, ActionName("Delete")]
+    [HttpPost, ActionName("Hide")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> HideConfirmed(int id)
     {
         var book = await _db.Books.FindAsync(id);
         if (book is null) return NotFound();
-        _db.Books.Remove(book);
+        book.IsHidden = true;
         await _db.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    // POST: /books/borrow/{id}
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Unhide(int id)
+    {
+        var book = await _db.Books.FindAsync(id);
+        if (book is null) return NotFound();
+        book.IsHidden = false;
+        await _db.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    // ---------- Взять / вернуть ----------
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Borrow(int id)
@@ -123,7 +253,7 @@ public class BooksController : Controller
         if (student is null) return Forbid();
 
         var book = await _db.Books.FindAsync(id);
-        if (book is null) return NotFound();
+        if (book is null || book.IsHidden) return NotFound();
         if (book.AvailableCopies <= 0) return RedirectToAction(nameof(Index));
 
         var today = DateTime.UtcNow.Date;
@@ -137,10 +267,9 @@ public class BooksController : Controller
         book.AvailableCopies--;
 
         await _db.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction("Profile", "Account");
     }
 
-    // POST: /books/return/{borrowingId}
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Return(int id)
@@ -156,6 +285,7 @@ public class BooksController : Controller
             .FirstOrDefaultAsync(b => b.Id == id && b.StudentId == student.Id);
 
         if (borrowing is null) return NotFound();
+
         if (!borrowing.IsReturned)
         {
             borrowing.ReturnDate = DateTime.UtcNow.Date;

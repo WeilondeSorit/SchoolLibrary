@@ -8,6 +8,11 @@
         : "—";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/books.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+}
+
 <div class="books-page">
     <div class="books-toolbar">
         <div class="toolbar-form">
@@ -16,16 +21,33 @@
 
         @if (isLibrarian)
         {
-            <div style="display: flex; gap: 8px;">
+            <div style="display:flex; gap:8px;">
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-reset">✏️ Редактировать</a>
-                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn-reset">🗑️ Удалить</a>
+                @if (Model.IsHidden)
+                {
+                    <form asp-action="Unhide" asp-route-id="@Model.Id" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn-reset">👁️ Показать</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-action="Hide" asp-route-id="@Model.Id" class="btn-reset">🙈 Скрыть</a>
+                }
             </div>
         }
     </div>
 
+    @if (Model.IsHidden)
+    {
+        <div class="delete-warning" style="margin-bottom: 20px;">
+            🙈 Эта книга скрыта от учеников.
+        </div>
+    }
+
     <div class="profile-page">
         <aside class="profile-sidebar">
-            <div class="book-cover" style="height: 260px; border-radius: 12px;">
+            <div class="book-cover" style="height: 320px; border-radius: 12px;">
                 @if (!string.IsNullOrEmpty(Model.CoverUrl))
                 {
                     <img src="@Model.CoverUrl" alt="@Model.Title" />
@@ -45,11 +67,11 @@
                 }
             </div>
 
-            @if (!isLibrarian && Model.AvailableCopies > 0)
+            @if (!isLibrarian && Model.AvailableCopies > 0 && !Model.IsHidden)
             {
                 <form asp-action="Borrow" asp-route-id="@Model.Id" method="post" style="margin-top: 16px;">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn-borrow" style="width: 100%; padding: 12px;">
+                    <button type="submit" class="btn-borrow" style="width:100%; padding:12px;">
                         Взять книгу
                     </button>
                 </form>
@@ -57,32 +79,32 @@
         </aside>
 
         <section class="profile-content">
-            <h1 class="book-title" style="font-size: 24px; margin: 0 0 6px;">@Model.Title</h1>
+            <h1 style="margin: 0 0 6px; font-size: 24px;">@Model.Title</h1>
             <p class="book-author" style="font-size: 15px;">@authors</p>
 
             <div class="borrow-list" style="margin-top: 24px;">
                 <div class="borrow-card">
                     <div class="borrow-info">
-                        <h4>Жанр</h4>
+                        <span class="label">Жанр</span>
                         <p class="borrow-author">@(Model.Genre ?? "—")</p>
                     </div>
                     <div class="borrow-info">
-                        <h4>Год издания</h4>
+                        <span class="label">Год</span>
                         <p class="borrow-author">@(Model.Year?.ToString() ?? "—")</p>
                     </div>
                     <div class="borrow-info">
-                        <h4>ISBN</h4>
+                        <span class="label">ISBN</span>
                         <p class="borrow-author">@(Model.Isbn ?? "—")</p>
                     </div>
                 </div>
 
                 <div class="borrow-card">
                     <div class="borrow-info">
-                        <h4>Всего экземпляров</h4>
+                        <span class="label">Всего экземпляров</span>
                         <p class="borrow-author">@Model.TotalCopies</p>
                     </div>
                     <div class="borrow-info">
-                        <h4>Доступно сейчас</h4>
+                        <span class="label">Доступно сейчас</span>
                         <p class="borrow-author">@Model.AvailableCopies</p>
                     </div>
                 </div>

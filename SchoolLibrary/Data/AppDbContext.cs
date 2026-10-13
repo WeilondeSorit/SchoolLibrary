@@ -58,6 +58,7 @@ public class AppDbContext : DbContext
             e.Property(b => b.TotalCopies).HasColumnName("total_copies");
             e.Property(b => b.AvailableCopies).HasColumnName("available_copies");
             e.Property(b => b.CoverUrl).HasColumnName("cover_url");
+            e.Property(b => b.IsHidden).HasColumnName("is_hidden");  // ← новая строка
         });
 
         // ---------- students ----------

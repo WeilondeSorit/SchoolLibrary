@@ -4,19 +4,20 @@
     var role = ViewBag.UserRole as string;
     var name = ViewBag.UserName as string;
     var isLibrarian = role == "Librarian";
+    var active = Model.Where(b => !b.IsReturned).ToList();
+    var returned = Model.Where(b => b.IsReturned).ToList();
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/books.css" asp-append-version="true" />
 }
 
 <div class="profile-page">
-
     <aside class="profile-sidebar">
         <div class="profile-avatar">@(string.IsNullOrEmpty(name) ? "?" : name.Substring(0, 1).ToUpper())</div>
         <h2 class="profile-name">@name</h2>
         <p class="profile-role">@(isLibrarian ? "Библиотекарь" : "Ученик")</p>
-
         <a asp-controller="Account" asp-action="Logout" class="btn-logout">Выйти</a>
     </aside>
 
@@ -33,16 +34,16 @@
         }
         else
         {
-            <h3>Мои книги</h3>
+            <h3>Мои книги <span class="badge available" style="position:static;">@active.Count</span></h3>
 
-            @if (Model.Count == 0)
+            @if (active.Count == 0)
             {
-                <div class="empty-state"><p>У вас пока нет взятых книг.</p></div>
+                <div class="empty-state"><p>У вас пока нет активных выдач.</p></div>
             }
             else
             {
                 <div class="borrow-list">
-                    @foreach (var b in Model)
+                    @foreach (var b in active)
                     {
                         var bookTitle = b.Book?.Title ?? "—";
                         var authors = b.Book?.Authors is { Count: > 0 }
@@ -66,10 +67,26 @@
                                     </span>
                                 </div>
                             </div>
-                            <form asp-controller="Books" asp-action="Return" asp-route-id="@b.Id" method="post">
+                            <form asp-controller="Books" asp-action="Return" asp-route-id="@b.Id" method="post" style="margin:0;">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn-return">Вернуть</button>
                             </form>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (returned.Count > 0)
+            {
+                <h3 style="margin-top:32px;">История возвратов</h3>
+                <div class="borrow-list">
+                    @foreach (var b in returned)
+                    {
+                        <div class="borrow-card" style="opacity:.65; border-left-color:#9ca3af;">
+                            <div class="borrow-info">
+                                <h4>@(b.Book?.Title ?? "—")</h4>
+                                <p class="borrow-author">@(b.ReturnDate?.ToString("dd.MM.yyyy"))</p>
+                            </div>
                         </div>
                     }
                 </div>

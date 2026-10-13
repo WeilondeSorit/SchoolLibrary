@@ -3,7 +3,10 @@
     ViewData["Title"] = Model.FullName;
     var authorBooks = Model.Books.ToList();
 }
-
+@section Styles {
+    <link rel="stylesheet" href="~/css/books.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+}
 <div class="books-page">
     <div class="books-toolbar">
         <div class="toolbar-form">

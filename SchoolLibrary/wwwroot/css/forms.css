@@ -44,3 +44,55 @@
 .btn-primary:hover { background: #c8935f; }
 .btn-secondary { background: #f0e4d8; color: #5c3d24; }
 .btn-secondary:hover { background: #e5d3c0; }
+
+/* --- Дополнения для страницы удаления --- */
+
+.delete-warning {
+    background: #fef3c7;
+    color: #92400e;
+    border-left: 4px solid #f59e0b;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.delete-preview {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    align-items: start;
+    margin-bottom: 28px;
+}
+
+.delete-preview-info h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+}
+
+.delete-preview .borrow-list {
+    margin-top: 0;
+}
+
+.btn-danger {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 10px;
+    background: #dc2626;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .15s, transform .15s;
+}
+.btn-danger:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+    .delete-preview {
+        grid-template-columns: 1fr;
+    }
+}

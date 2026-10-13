@@ -12,6 +12,7 @@ public class Book
     public int TotalCopies { get; set; }
     public int AvailableCopies { get; set; }
     public string? CoverUrl { get; set; }
+    public bool IsHidden { get; set; }
 
     public ICollection<Author> Authors { get; set; } = new List<Author>();
 
