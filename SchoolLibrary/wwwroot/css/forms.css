@@ -90,6 +90,107 @@
     background: #b91c1c;
     transform: translateY(-1px);
 }
+/* --- Блок импорта из Excel --- */
+.import-block {
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 2px dashed #e5e7eb;
+}
+
+.import-block h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
+.import-hint {
+    color: #6b7280;
+    font-size: 14px;
+    margin: 0 0 18px;
+    line-height: 1.5;
+}
+.import-hint code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.import-format {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 18px;
+}
+
+.import-format-title {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.import-format-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.import-format-table th,
+.import-format-table td {
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+.import-format-table th {
+    color: #6b7280;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.import-format-table td:first-child {
+    font-weight: 700;
+    color: #4f46e5;
+    width: 50px;
+}
+.import-format-table tr:last-child td { border-bottom: none; }
+
+.import-note {
+    margin: 12px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.import-form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.import-form input[type="file"] {
+    flex: 1;
+    min-width: 240px;
+    padding: 8px;
+}
+
+/* --- Сообщения после импорта --- */
+.import-message {
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+.import-message.success {
+    background: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid #10b981;
+}
+.import-message.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+}
 
 @media (max-width: 640px) {
     .delete-preview {

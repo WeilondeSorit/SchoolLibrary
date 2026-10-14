@@ -39,8 +39,8 @@ services:
 volumes:
   pgdata:
   dataprotection-keys:
-  uploads:           
-
+  uploads:
+  
 networks:
   app-network:
     driver: bridge

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SchoolLibrary.Data;
 using SchoolLibrary.Models;
 using SchoolLibrary.ViewModels;
+using ClosedXML.Excel;
 
 namespace SchoolLibrary.Controllers;
 
@@ -269,7 +270,178 @@ public class BooksController : Controller
         await _db.SaveChangesAsync();
         return RedirectToAction("Profile", "Account");
     }
+// ---------- Импорт из Excel ----------
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Import(IFormFile? excelFile)
+{
+    if (excelFile is null || excelFile.Length == 0)
+    {
+        TempData["ImportError"] = "Файл не выбран";
+        return RedirectToAction(nameof(Create));
+    }
 
+    if (!excelFile.FileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+    {
+        TempData["ImportError"] = "Поддерживается только формат .xlsx";
+        return RedirectToAction(nameof(Create));
+    }
+
+    int imported = 0;
+    int skipped = 0;
+    var errors = new List<string>();
+
+    // Все существующие ISBN из БД (в нижнем регистре для надёжного сравнения)
+    var existingIsbns = (await _db.Books
+            .Where(b => b.Isbn != null && b.Isbn != "")
+            .Select(b => b.Isbn!)
+            .ToListAsync())
+        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    var seenInFile = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+    var toInsert = new List<Book>();
+
+    try
+    {
+        using var stream = excelFile.OpenReadStream();
+        using var wb = new XLWorkbook(stream);
+        var ws = wb.Worksheets.First();
+
+        var lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+
+        for (int r = 2; r <= lastRow; r++)
+        {
+            var row = ws.Row(r);
+            var title = row.Cell(1).GetString().Trim();
+
+            if (string.IsNullOrWhiteSpace(title))
+                continue;
+
+            try
+            {
+                var isbn = NullIfEmpty(row.Cell(4).GetString());
+
+                if (isbn != null)
+                {
+                    if (existingIsbns.Contains(isbn))
+                    {
+                        skipped++;
+                        errors.Add($"строка {r}: ISBN {isbn} уже есть в базе — пропущено");
+                        continue;
+                    }
+                    if (seenInFile.Contains(isbn))
+                    {
+                        skipped++;
+                        errors.Add($"строка {r}: ISBN {isbn} дублируется в файле — пропущено");
+                        continue;
+                    }
+                    seenInFile.Add(isbn);
+                }
+
+                var total = row.Cell(5).IsEmpty() ? 1 : (int)row.Cell(5).GetDouble();
+                var avail = row.Cell(6).IsEmpty() ? total : (int)row.Cell(6).GetDouble();
+
+                if (total < 0) total = 0;
+                if (avail < 0) avail = 0;
+                if (avail > total) avail = total;
+
+                toInsert.Add(new Book
+                {
+                    Title = title,
+                    Genre = NullIfEmpty(row.Cell(2).GetString()),
+                    Year = row.Cell(3).IsEmpty() ? null : (int?)row.Cell(3).GetDouble(),
+                    Isbn = isbn,
+                    TotalCopies = total,
+                    AvailableCopies = avail,
+                    CoverUrl = NullIfEmpty(row.Cell(7).GetString()),
+                    IsHidden = ParseBool(row.Cell(8).GetString())
+                });
+                imported++;
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"строка {r}: {ex.Message}");
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        TempData["ImportError"] = "Не удалось прочитать файл: " + ex.Message;
+        return RedirectToAction(nameof(Create));
+    }
+
+    if (toInsert.Count > 0)
+    {
+        try
+        {
+            _db.Books.AddRange(toInsert);
+            await _db.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            TempData["ImportError"] = "Ошибка при сохранении: " + ex.Message;
+            return RedirectToAction(nameof(Create));
+        }
+    }
+
+    var summary = $"Импортировано книг: {imported}";
+    if (skipped > 0) summary += $", пропущено из-за дублей: {skipped}";
+    TempData["ImportSuccess"] = summary;
+
+    if (errors.Count > 0)
+        TempData["ImportError"] = "Детали: " + string.Join("; ", errors.Take(10));
+
+    return RedirectToAction(nameof(Create));
+}
+
+// ---------- Шаблон для скачивания ----------
+[HttpGet]
+public IActionResult DownloadTemplate()
+{
+    using var wb = new XLWorkbook();
+    var ws = wb.Worksheets.Add("Книги");
+
+    var headers = new[]
+    {
+        "Название", "Жанр", "Год", "ISBN",
+        "Всего экземпляров", "Доступно", "Ссылка на обложку", "Скрыта"
+    };
+    for (int i = 0; i < headers.Length; i++)
+        ws.Cell(1, i + 1).Value = headers[i];
+
+    ws.Row(1).Style.Font.Bold = true;
+    ws.Row(1).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+    // Пример БЕЗ ISBN — чтобы не конфликтовать с существующими книгами
+    ws.Cell(2, 1).Value = "Пример: Название книги";
+    ws.Cell(2, 2).Value = "Роман";
+    ws.Cell(2, 3).Value = 2000;
+    // ISBN (D) намеренно оставлен пустым
+    ws.Cell(2, 5).Value = 3;
+    ws.Cell(2, 6).Value = 3;
+    ws.Cell(2, 7).Value = "https://example.com/cover.jpg";
+    ws.Cell(2, 8).Value = "нет";
+
+    ws.Columns().AdjustToContents();
+
+    using var ms = new MemoryStream();
+    wb.SaveAs(ms);
+
+    return File(
+        ms.ToArray(),
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "books-template.xlsx");
+}
+// ---------- Хелперы ----------
+private static string? NullIfEmpty(string s)
+    => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+
+private static bool ParseBool(string s)
+{
+    s = (s ?? "").Trim().ToLowerInvariant();
+    return s is "да" or "true" or "1" or "yes" or "y" or "истина" or "скрыта";
+}
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Return(int id)

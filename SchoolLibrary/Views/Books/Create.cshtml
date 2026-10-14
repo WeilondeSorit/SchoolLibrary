@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Добавить книгу";
     var authors = ViewBag.Authors as List<SchoolLibrary.Models.Author> ?? new();
+    var importError = TempData["ImportError"] as string;
+    var importSuccess = TempData["ImportSuccess"] as string;
 }
 
 @section Styles {
@@ -14,6 +16,15 @@
             <a asp-action="Index" class="btn-reset">← К каталогу</a>
         </div>
     </div>
+
+    @if (!string.IsNullOrEmpty(importSuccess))
+    {
+        <div class="import-message success">✅ @importSuccess</div>
+    }
+    @if (!string.IsNullOrEmpty(importError))
+    {
+        <div class="import-message error">⚠️ @importError</div>
+    }
 
     <div class="form-page">
         <h1>Добавить книгу</h1>
@@ -104,6 +115,49 @@
                 <a asp-action="Index" class="btn-secondary">Отмена</a>
             </div>
         </form>
+
+        <!-- ==================== Импорт из Excel ==================== -->
+        <div class="import-block">
+            <h2>📥 Импорт книг из Excel</h2>
+            <p class="import-hint">
+                Загрузите файл <code>.xlsx</code> — все книги из файла добавятся сразу.
+                Первая строка — заголовки, данные начинаются со второй строки.
+            </p>
+
+            <div class="import-format">
+                <p class="import-format-title">Формат файла (колонки слева направо):</p>
+                <table class="import-format-table">
+                    <thead>
+                        <tr>
+                            <th>Кол.</th>
+                            <th>Поле</th>
+                            <th>Обязательно</th>
+                            <th>Пример</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>A</td><td>Название</td><td>✅</td><td>Война и мир</td></tr>
+                        <tr><td>B</td><td>Жанр</td><td>—</td><td>Роман</td></tr>
+                        <tr><td>C</td><td>Год</td><td>—</td><td>1869</td></tr>
+                        <tr><td>D</td><td>ISBN</td><td>—</td><td>978-5-04-116000-1</td></tr>
+                        <tr><td>E</td><td>Всего экземпляров</td><td>—</td><td>5</td></tr>
+                        <tr><td>F</td><td>Доступно сейчас</td><td>—</td><td>3</td></tr>
+                        <tr><td>G</td><td>Ссылка на обложку</td><td>—</td><td>https://...</td></tr>
+                        <tr><td>H</td><td>Скрыта (да/нет)</td><td>—</td><td>нет</td></tr>
+                    </tbody>
+                </table>
+                <p class="import-note">
+                    ⓘ Авторы через Excel не импортируются — их можно проставить после импорта через «Редактировать».
+                </p>
+            </div>
+
+            <form asp-action="Import" method="post" enctype="multipart/form-data" class="import-form">
+                @Html.AntiForgeryToken()
+                <input type="file" name="excelFile" accept=".xlsx" class="form-control" required />
+                <button type="submit" class="btn-primary">Импортировать</button>
+                <a asp-action="DownloadTemplate" class="btn-secondary">📄 Скачать шаблон</a>
+            </form>
+        </div>
     </div>
 </div>
 
