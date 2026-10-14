@@ -10,12 +10,25 @@ public class HomeController : Controller
     private readonly AppDbContext _db;
     public HomeController(AppDbContext db) => _db = db;
 
-    // GET: /
-    public IActionResult Index() => View();
+    // GET: /  — страница входа.
+    // Если пользователь уже авторизован, показывать логин не нужно — сразу к книгам.
+    public IActionResult Index()
+    {
+        if (HttpContext.Session.GetInt32("UserId") is not null)
+            return RedirectToAction("Index", "Books");
+
+        return View();
+    }
 
     // GET: /Home/Login → редирект на страницу входа
     [HttpGet]
-    public IActionResult Login() => RedirectToAction(nameof(Index));
+    public IActionResult Login()
+    {
+        if (HttpContext.Session.GetInt32("UserId") is not null)
+            return RedirectToAction("Index", "Books");
+
+        return RedirectToAction(nameof(Index));
+    }
 
     // POST: /Home/Login
     [HttpPost]
@@ -55,12 +68,7 @@ public class HomeController : Controller
 
     // GET: /Home/Error — обработчик исключений
     [Route("Home/Error")]
-    public IActionResult Error()
-    {
-        // Важно: не выставляем Response.StatusCode здесь вручную.
-        // Middleware выставит 500 сам.
-        return View();
-    }
+    public IActionResult Error() => View();
 
     // GET: /Home/NotFound — страница 404
     [Route("Home/NotFound")]
