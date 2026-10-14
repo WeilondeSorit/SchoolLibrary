@@ -75,7 +75,12 @@
 
             <div class="form-group">
                 <label asp-for="Isbn"></label>
-                <input asp-for="Isbn" class="form-control" />
+                <input asp-for="Isbn" class="form-control"
+                       placeholder="Оставьте пустым — сгенерируется автоматически" />
+                <p class="book-meta" style="margin-top:6px;">
+                    ISBN-13 генерируется автоматически, если поле оставить пустым.
+                    Указывайте вручную только если книга уже имеет свой ISBN.
+                </p>
                 <span asp-validation-for="Isbn" class="field-error"></span>
             </div>
 
@@ -121,7 +126,8 @@
             <h2>📥 Импорт книг из Excel</h2>
             <p class="import-hint">
                 Загрузите файл <code>.xlsx</code> — все книги из файла добавятся сразу.
-                Первая строка — заголовки, данные начинаются со второй строки.
+                Первая строка — заголовки, данные начинаются со второй строки.<br />
+                Колонка <b>ISBN</b> необязательна: если оставить её пустой, сервер сгенерирует ISBN автоматически.
             </p>
 
             <div class="import-format">
@@ -139,7 +145,7 @@
                         <tr><td>A</td><td>Название</td><td>✅</td><td>Война и мир</td></tr>
                         <tr><td>B</td><td>Жанр</td><td>—</td><td>Роман</td></tr>
                         <tr><td>C</td><td>Год</td><td>—</td><td>1869</td></tr>
-                        <tr><td>D</td><td>ISBN</td><td>—</td><td>978-5-04-116000-1</td></tr>
+                        <tr><td>D</td><td>ISBN</td><td>—</td><td>978-5-04-116000-1 (пусто = автогенерация)</td></tr>
                         <tr><td>E</td><td>Всего экземпляров</td><td>—</td><td>5</td></tr>
                         <tr><td>F</td><td>Доступно сейчас</td><td>—</td><td>3</td></tr>
                         <tr><td>G</td><td>Ссылка на обложку</td><td>—</td><td>https://...</td></tr>

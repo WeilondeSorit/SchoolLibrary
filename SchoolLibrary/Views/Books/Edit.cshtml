@@ -22,6 +22,7 @@
         <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" class="app-form">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Isbn" />
 
             <div asp-validation-summary="ModelOnly" class="field-error"></div>
 
@@ -56,8 +57,12 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="Isbn"></label>
-                <input asp-for="Isbn" class="form-control" />
+                <label>ISBN</label>
+                <input class="form-control" value="@Model.Isbn" readonly
+                       style="background:#f3f4f6; cursor:not-allowed;" />
+                <p class="book-meta" style="margin-top:6px;">
+                    ISBN присваивается книге один раз при создании и не изменяется.
+                </p>
             </div>
 
             <div class="form-row">
